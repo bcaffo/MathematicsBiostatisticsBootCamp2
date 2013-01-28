@@ -1,11 +1,11 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 \mode<presentation>
-% \usetheme{Warsaw}
-% \usetheme{Goettingen}
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
 \usetheme{Hannover}
-% \useoutertheme{default}
+%\useoutertheme{default}
 
-% \useoutertheme{infolines}
+%\useoutertheme{infolines}
 \useoutertheme{sidebar}
 \usecolortheme{dolphin}
 
@@ -13,9 +13,8 @@
 \usepackage{amssymb}
 \usepackage{enumerate}
 
-% some bold math symbosl
+%some bold math symbosl
 \newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\Cor}{\mathrm{Cor}}
 \newcommand{\Var}{\mathrm{Var}}
 \newcommand{\brho}{\boldsymbol{\rho}}
 \newcommand{\bSigma}{\boldsymbol{\Sigma}}
@@ -31,7 +30,7 @@
 
 \newcommand{\cpp}[1]{\texttt{#1}}
 
-\title{Lecture 1}
+\title{Mathematical Biostatistics Boot Camp 2: Lecture 1, Hypothesis Testing}
 \author{Brian Caffo}
 \date{\today}
 \institute[Department of Biostatistics]{
@@ -41,26 +40,17 @@
 }
 
 
-\begin{document}
+%\logo{\includegraphics[height=0.5cm]{Logo_PPT.pdf}}
 
+\begin{document}
 \frame{\titlepage}
 
-\section{Table of contents}
+%\section{Table of contents}
 \frame{
   \frametitle{Table of contents}
   \tableofcontents
 }
 
-\section{Outline}
-  \begin{frame}\frametitle{Outline}
-  \begin{enumerate}
-  \item Introduce hypothesis testing
-  \item Cover hypothesis testing for a single mean
-  \item $Z$ and $T$ tests for a single mean
-  \item Confidence interval equivalences
-  \item P-values
- \end{enumerate}
- \end{frame}
 
 \section{Hypothesis testing}
 \begin{frame}\frametitle{Hypothesis Testing}
