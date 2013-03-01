@@ -1,0 +1,198 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+\title{Mathematical Biostatistics Boot Camp 2: Lecture 2, Power}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+%\logo{\includegraphics[height=0.5cm]{Logo_PPT.pdf}}
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+
+\section{Power}
+\begin{frame}\frametitle{Power}
+\begin{itemize}
+\item Power is the probability of rejecting the null hypothesis when it is false
+\item Ergo, power (as it's name would suggest) is a good thing; you want more power
+\item A type II error (a bad thing, as its name would suggest) is failing to reject the null hypothesis when it's false; the probability of a type II error is usally called $\beta$
+\item Note Power  $= 1 - \beta$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Consider our previous example involving RDI
+\item $H_0: \mu = 30$ versus $H_a: \mu > 30$
+\item Then power is 
+$$P\left(\frac{\bar X - 30}{s /\sqrt{n}} > t_{1-\alpha,n-1} ~|~ \mu = \mu_a \right)$$
+\item Note that this is a function that depends on the specific value of $\mu_a$!
+\item Notice as $\mu_a$ approaches $30$ the power approaches $\alpha$
+\end{itemize}
+\end{frame}
+
+\section{Calculating power}
+\begin{frame}\frametitle{Calculating power} 
+Assume that $n$ is large and that we know $\sigma$
+\begin{eqnarray*}
+1 -\beta & = & 
+P\left(\frac{\bar X - 30}{\sigma /\sqrt{n}} > z_{1-\alpha} ~|~ \mu = \mu_a \right)\\ \\
+& = & P\left(\frac{\bar X - \mu_a + \mu_a - 30}{\sigma /\sqrt{n}} > z_{1-\alpha} ~|~ \mu = \mu_a \right)\\ \\
+& = & P\left(\frac{\bar X - \mu_a}{\sigma /\sqrt{n}} > z_{1-\alpha} - \frac{\mu_a - 30}{\sigma /\sqrt{n}} ~|~ \mu = \mu_a \right)\\ \\
+& = & P\left(Z > z_{1-\alpha} - \frac{\mu_a - 30}{\sigma /\sqrt{n}} ~|~ \mu = \mu_a \right)\\ \\
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}\frametitle{Example continued}
+\begin{itemize}
+\item Suppose that we wanted to detect a increase in mean RDI
+  of at least 2 events / hour (above 30). Assume normality and
+  that the sample in question will have a standard deviation of $4$;
+  what would be the power if we took a sample size of $16$? \\
+\item $Z_{\alpha} = 1.645$ and $\frac{\mu_a - 30}{\sigma /\sqrt{n}} = 2 / (4 /\sqrt{16}) = 2$ \\
+\item $P(Z > 1.645 - 2) = P(Z > -0.355) = 64\%$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example continued}
+\begin{itemize}
+\item What $n$ would be required to get a power of 80\%
+\item I.e. we want
+$$0.80 = P\left(Z > z_{1-\alpha} - \frac{\mu_a - 30}{\sigma /\sqrt{n}} ~|~ \mu = \mu_a \right)$$
+\item Set $z_{1-\alpha} - \frac{\mu_a - 30}{\sigma /\sqrt{n}} = z_{0.20}$ and solve for $n$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item The calculation for $H_a:\mu < \mu_0$ is similar
+\item For $H_a: \mu \neq \mu_0$ calculate the one sided power using
+  $\alpha / 2$ (this is only approximately right, it excludes the probability of
+  getting a large TS in the opposite direction of the truth)
+\item Power goes up as $\alpha$ gets larger
+\item Power of a one sided test is greater than the power of the
+  associated two sided test
+\item Power goes up as $\mu_1$ gets further away from $\mu_0$
+\item Power goes up as $n$ goes up
+\end{itemize}
+\end{frame}
+
+
+\section{T-tests}
+\begin{frame}\frametitle{Power for the T test}
+\begin{itemize}
+\item Consider calculating power for a Gossett's $T$ test for our example
+\item The power is
+  $$
+  P\left(\frac{\bar X - 30}{S /\sqrt{n}} > t_{1-\alpha, n-1} ~|~ \mu = \mu_a \right)
+  $$
+\item Notice that this is equal to
+  \begin{eqnarray*}
+& = &     
+  P\left(\sqrt{n}(\bar X - 30) +  > t_{1 - \alpha, n-1} S ~|~ \mu = \mu_a \right)\\ \\
+& = &     
+  P\left(\frac{\sqrt{n}(\bar X - 30)}{\sigma} +  > t_{1-\alpha, n-1} \frac{S}{\sigma} ~|~ \mu = \mu_a \right)
+  \end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item Continued
+$$
+  P\left(\frac{\sqrt{n}(\bar X - \mu_a)}{\sigma} + \frac{\sqrt{n}(\mu_a - 30)}{\sigma} > \frac{t_{1-\alpha, n-1}}{\sqrt{n-1}}\times \sqrt{\frac{(n-1) S^2}{\sigma^2}} \right)$$
+(where we ommitted the conditional on $\mu_a$ part for space)
+\item This is now equal to
+$$
+P\left(Z + \frac{\sqrt{n}(\mu_a - 30)}{\sigma} >  \frac{t_{1 - \alpha, n-1}}{\sqrt{n-1}} \sqrt{\chi^2_{n-1}}\right)
+$$
+where $Z$ and $\chi^2_{n-1}$ are independent standard normal and chi-squared random variables
+\item While computing this probability is outside the scope of the class, it would be easy to approximate with Monte Carlo
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]\frametitle{Example}
+Let's recalculate power for the previous example using the $T$ distribution
+instead of the normal; here's the easy way to do it. Let $\sigma = 4$
+and $\mu_a - \mu_0 = 2$
+\begin{verbatim}
+##the easy way
+power.t.test(n = 16, delta = 2 / 4, 
+             type = "one.sample", 
+             alt = "one.sided")
+##result is 60%
+\end{verbatim}
+\end{frame}
+
+\section{Monte Carlo}
+\begin{frame}[fragile]\frametitle{Example}
+Using Monte Carlo
+\begin{verbatim}
+nosim <- 100000
+n <- 16
+sigma <- 4
+mu0 <- 30
+mua <- 32
+z <- rnorm(nosim)
+xsq <- rchisq(nosim, df = 15)
+t <- qt(.95, 15)
+mean(z + sqrt(n) * (mua - mu0) / sigma >
+     t / sqrt(n - 1) * sqrt(xsq))
+##result is 60%
+\end{verbatim}
+\end{frame}
+
+\begin{frame}\frametitle{Comments}
+\begin{itemize}
+\item Notice that in both cases, power required a true mean and a true standard deviation
+\item However in this (and most linear models) the power depends only on the mean (or change in means) divided by the standard deviation
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}
+
