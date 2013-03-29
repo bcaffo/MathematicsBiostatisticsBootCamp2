@@ -91,7 +91,7 @@ P\left(\frac{\bar X - 30}{\sigma /\sqrt{n}} > z_{1-\alpha} ~|~ \mu = \mu_a \righ
   of at least 2 events / hour (above 30). Assume normality and
   that the sample in question will have a standard deviation of $4$;
   what would be the power if we took a sample size of $16$? \\
-\item $Z_{\alpha} = 1.645$ and $\frac{\mu_a - 30}{\sigma /\sqrt{n}} = 2 / (4 /\sqrt{16}) = 2$ \\
+\item $Z_{1-\alpha} = 1.645$ and $\frac{\mu_a - 30}{\sigma /\sqrt{n}} = 2 / (4 /\sqrt{16}) = 2$ \\
 \item $P(Z > 1.645 - 2) = P(Z > -0.355) = 64\%$
 \end{itemize}
 \end{frame}
@@ -131,9 +131,9 @@ $$0.80 = P\left(Z > z_{1-\alpha} - \frac{\mu_a - 30}{\sigma /\sqrt{n}} ~|~ \mu =
 \item Notice that this is equal to
   \begin{eqnarray*}
 & = &     
-  P\left(\sqrt{n}(\bar X - 30) +  > t_{1 - \alpha, n-1} S ~|~ \mu = \mu_a \right)\\ \\
+  P\left(\sqrt{n}(\bar X - 30) > t_{1 - \alpha, n-1} S ~|~ \mu = \mu_a \right)\\ \\
 & = &     
-  P\left(\frac{\sqrt{n}(\bar X - 30)}{\sigma} +  > t_{1-\alpha, n-1} \frac{S}{\sigma} ~|~ \mu = \mu_a \right)
+  P\left(\frac{\sqrt{n}(\bar X - 30)}{\sigma}   > t_{1-\alpha, n-1} \frac{S}{\sigma} ~|~ \mu = \mu_a \right)
   \end{eqnarray*}
 \end{itemize}
 \end{frame}
