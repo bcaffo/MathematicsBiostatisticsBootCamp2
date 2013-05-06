@@ -1,0 +1,146 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+ \title{Mathematical Biostatistics Boot Camp 2: Lecture 6, Delta Method}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\section{Recap}
+\begin{frame}\frametitle{Two sample binomials results} 
+  Recall $X \sim \mathrm{Bin}(n_1, p_1)$ and $Y\sim \mathrm{Bin}(n_2, p_2)$. Also this
+  information is often arranged in a 2$\times$2 table:
+  \begin{center}
+    \begin{tabular}{|c|c|c|}\hline
+      $n_{11} = x$ & $n_{12} = n_1 - x$ & $n_1$ \\ \hline
+      $n_{21} = y$ & $n_{22} = n_2 - y$ & $n_2$ \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{itemize}
+  \item $\hat{RD} = \hat p_1 - \hat p_2$ \\ \ \\
+    $\hat{SE}_{\hat{RD}} = \sqrt{\frac{\hat p_1 (1 - \hat p_1)}{n_1} + \frac{\hat p_2(1 - \hat p_2)}{n_2}}$
+  \item $\hat{RR} = \frac{\hat p_1}{\hat p_2}$ \\ \ \\
+ $\hat{SE}_{\log \hat{RR}} = \sqrt{\frac{(1 - \hat p_1)}{\hat p_1 n_1} + \frac{(1 - \hat p_2)}{\hat p_2 n_1}}$ 
+\item $\hat{OR} = \frac{\hat p_1 / (1 - \hat p_1)}{\hat p_2 / (1 - \hat p_2)} = \frac{n_{11} n_{22}}{n_{12}n_{21}}$ \\ \ \\
+  $\hat{SE}_{\log \hat{OR}} = \sqrt{\frac{1}{n_{11}} + \frac{1}{n_{12}} + \frac{1}{n_{21}} + \frac{1}{n_{22}}}$
+\end{itemize}
+\ \\
+$\mbox{CI} = \mbox{Estimate} \pm Z_{1 - \alpha/2} \mbox{SE}_{\mbox{Est}}$ 
+\end{frame}
+
+\section{The delta method}
+\begin{frame}\frametitle{Standard errors}
+\begin{itemize}
+\item {\bf delta method} can be used to obtain large sample standard errors
+\item Formally, the delta methods states that if 
+  $$
+  \frac{\hat \theta - \theta}{\hat{SE}_{\hat \theta}} \rightarrow \mathrm{N}(0, 1)
+  $$
+  then
+  $$
+  \frac{f(\hat \theta) - f(\theta)}{f'(\hat \theta) \hat{SE}_{\hat \theta}}
+  \rightarrow \mathrm{N}(0, 1)
+  $$
+\item Asymptotic mean of $f(\hat \theta)$ is $f(\theta)$
+\item Asymptotic standard error of $f(\hat \theta)$ can be
+  estimated with $f'(\hat \theta) \hat{SE}_{\hat \theta}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+  \begin{itemize}
+  \item $\theta = p_1$
+  \item $\hat \theta = \hat p_1$
+  \item $\hat{SE}_{\hat \theta} = \sqrt{\frac{\hat p_1 (1 - \hat p_1)}{n_1}}$
+  \item $f(x) = \log(x)$ 
+  \item $f'(x) = 1 / x$
+  \item $\frac{\hat \theta - \theta}{\hat{SE}_{\hat \theta}} \rightarrow \mathrm{N}(0,1)$ by the CLT 
+  \item Then $\hat{SE}_{\log \hat p_1} = f'(\hat \theta) \hat{SE}_{\hat \theta}$
+    $$ = \frac{1}{\hat p_1}  \sqrt{\frac{\hat p_1 (1 - \hat p_1)}{ n_1}} = \sqrt{\frac{(1 - \hat p_1)}{\hat p_1 n_1}}$$
+  \item And 
+    $$
+    \frac{\log \hat p_1 - \log p_1}{ \sqrt{\frac{(1 - \hat p_1)}{\hat p_1 n_1}}} 
+    \rightarrow \mathrm{N}(0,1)
+    $$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Putting it all together}
+  \begin{itemize}
+  \item Asymptotic standard error
+    \begin{eqnarray*}
+      \Var(\log \hat RR)
+      & = & \Var\{\log(\hat p_1 / \hat p_2)\} \\
+      & = & \Var(\log \hat p_1) + \Var(\log \hat p_2)  \\
+      & \approx & \frac{(1 - \hat p_1)}{\hat p_1 n_1} + \frac{(1 - \hat p_2)}{ \hat p_2 n_2}
+    \end{eqnarray*}
+  \item The last line following from the delta method
+  \item The approximation requires large sample sizes
+  \item The delta method can be used similarly for the log odds ratio
+  \end{itemize}
+\end{frame}
+
+\section{Derivation of the delta method}
+\begin{frame}\frametitle{Motivation for the delta method}
+  \begin{itemize}
+  \item If $\hat \theta$ is close to $\theta$ then
+    $$
+    \frac{f(\hat \theta) - f(\theta)}{\hat \theta - \theta} \approx f'(\hat\theta) 
+    $$
+  \item So
+    $$
+    \frac{f(\hat \theta) - f(\theta)}{f'(\hat \theta)} \approx \hat \theta - \theta
+    $$
+  \item Therefore
+    $$
+    \frac{f(\hat \theta) - f(\theta)}{f'(\hat \theta)\hat{SE}_{\hat \theta}} \approx  
+    \frac{\hat \theta - \theta}{\hat{SE}_{\hat \theta}}
+    $$
+  \end{itemize}
+\end{frame}
+
+\end{document}
