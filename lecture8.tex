@@ -1,0 +1,433 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+ \title{Mathematical Biostatistics Boot Camp 2: Lecture 8, Chi Squared Tests}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+\section{Chi-squared testing}
+\begin{frame}\frametitle{Chi-squared testing}
+\begin{itemize}
+\item An alternative approach to testing equality of
+  proportions uses the chi-squared statistic
+  $$
+  \sum \frac{(\mbox{Observed} - \mbox{Expected})^2}{\mbox{Expected}}
+  $$
+\item ``Observed'' are the observed counts
+\item ``Expected'' are the expected counts under the null hypothesis
+\item The sum is over all four cells
+\item This statistic follows a Chi-squared distribution with 1 df
+\item The Chi-squared statistic is exactly the square
+  of the difference in proportions Score statistic
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline
+Trt & Side Effects & None & Total \\ \hline
+$X$ & $44$  & $56$  &$100$ \\   \hline
+$Y$ & $77$  & $43$ & $120$ \\   \hline
+    & $121$ & $99$ & $220$ \\   \hline
+\end{tabular}
+\end{center}
+\begin{itemize}
+\item $p_1$ and $p_2$ are the cure rates
+\item $H_0:p_1 = p_2$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\item The $\chi^2$ statistic is $\sum \frac{(O - E)^2}{E}$
+\item $O_{11} = 44$, $E_{11} = \frac{121}{220}\times 100 = 55$
+\item $O_{21} = 77$, $E_{21} = \frac{121}{220}\times 120 = 66$
+\item $O_{12} = 56$, $E_{12} = \frac{99}{220}\times 100 = 45$
+\item $O_{22} = 43$, $E_{22} = \frac{99}{220}\times 120 = 54$
+$$
+\chi^2  = \frac{(44 - 55)^2}{55} + \frac{(77 - 66)^2}{666} 
+         + \frac{(56 - 45)^2}{45} + \frac{(43 - 54)^2}{54} 
+$$
+Which turns out to be $8.96$. Compare to a $\chi^2$ with one degree of
+freedom (reject for large values).
+\begin{verbatim}
+pchisq(8.96, 1, lower.tail = FALSE) 
+#result is 0.002
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{R code}
+\begin{verbatim}
+dat <- matrix(c(44, 77, 56, 43), 2)
+chisq.test(dat)
+chisq.test(dat, correct = FALSE)
+\end{verbatim}  
+\end{frame}
+
+\begin{frame}\frametitle{Notation reminder}
+\begin{center}
+\begin{tabular}{|c|c|c|}\hline
+$n_{11} = x$ & $n_{12} = n_1 - x$ & $n_1 = n_{1+}$ \\ \hline
+$n_{21} = y$ & $n_{22} = n_2 - y$ & $n_2 = n_{2+}$ \\ \hline
+$n_{+1}$     & $n_{+2}$           &       \\ \hline 
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Reject if the statistic is too large
+\item Alternative is two sided
+\item Do not divide $\alpha$ by $2$
+\item A small $\chi^2$ statistic implies little difference between the
+  observed values and those expected under $H_0$
+\item The $\chi^2$ statistic and approach generalizes to other kinds of
+  tests and larger contingency tables
+\item Alternative computational form for the $\chi^2$ statistic
+$$
+\chi^2 = \frac{n(n_{11} n_{22} - n_{12}n_{21})^2}{n_{+1} n_{+2} n_{1+} n_{2+}}
+$$
+\end{itemize}
+\end{frame} 
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Notice that the statistic:
+$$
+\chi^2 = \frac{n(n_{11} n_{22} - n_{12}n_{21})^2}{n_{+1} n_{+2} n_{1+} n_{2+}}
+$$
+does not change if you transpose the rows and the columns of the table
+\item Surprisingly, the $\chi^2$ statistic can be used 
+  \begin{itemize}
+  \item the rows are fixed (binomial)
+  \item the colums are fixed (binomial)
+  \item the total sample size is fixed (multinomial)
+  \item none are fixed (Poisson) 
+  \end{itemize}
+\item For a given set of data, any of these assumptions results
+  in the same value for the statistic
+\end{itemize}
+\end{frame}
+
+\section{Testing independence}
+\begin{frame}\frametitle{Testing independence}
+\begin{itemize}
+\item Maternal age versus birthweight\footnote{From Agresti Categorical Data Analysis second edition}
+\item Cross-sectional sample, only the total sample size is fixed
+\end{itemize}
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline
+          & \multicolumn{2}{c}{Birthweight} & \\ \hline
+Mat. Age  & $<2500g$ & $\geq 2,500g$ & Total \\ \hline
+$< 20 y$    & $20$   & $80$  & $100$ \\   
+$\geq 20 y$ & $30$   & $270$ & $300$ \\   \hline
+Total       & $50$   & $350$ & $400$ \\   \hline
+\end{tabular}
+\end{center}
+\begin{itemize}
+\item $H_0:$ MA is independent of BW
+\item $H_a:$ MA is not independent of BW
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item Under $H_0$ (est) $P\left(\mbox{MA}<20\right) = \frac{100}{400} = .25$
+\item Under $H_0$ (est) $P\left(\mbox{BW}<2500\right) = \frac{50}{400} = .125$
+\item Under $H_0$ (est) 
+  $$P\left(\mbox{MA}<20\mbox{ and BW}<2,500 \right) = .25 \times .125$$
+\item Therefore
+  \begin{itemize}
+  \item $E_{11} = \frac{100}{400}\times\frac{50}{400}\times 400 = 12.5$
+  \item $E_{12} = \frac{100}{400}\times\frac{350}{400}\times 400 = 87.5$
+  \item $E_{21} = \frac{300}{400}\times\frac{50}{400}\times 400 = 37.5$
+  \item $E_{22} = \frac{300}{400}\times\frac{350}{400}\times 400 = 262.5$
+  \item $\chi^2 = \frac{(20 - 12.5)^2}{12.5} + \frac{(80- 87.5)^2}{87.5}
+                  \frac{(30 - 37.5)^2}{37.5} + \frac{(270- 262.5)^2}{262.5}= 6.86$
+  \end{itemize}
+\item Compare to critical value \\
+ \texttt{qchisq(.95, 1)=3.84}
+\item Or calculate P-value \\ 
+  \texttt{pchisq(6.86, 1, lower.tail = F)=.009}
+\end{itemize}
+\end{frame}
+
+\section{Testing equality of several proportions}
+\begin{frame}\frametitle{Chi-squared testing cont'd}
+\ttfamily
+\begin{center}
+\begin{tabular}{llll}
+& \multicolumn{2}{c}{Alcohol use} & \\
+Group      & High & Low & Total \\ \hline
+Clergy     & 32   & 268 & 300 \\
+Educators  & 51   & 199 & 250 \\
+Executives & 67   & 233 & 300 \\
+Retailers  & 83   & 267 & 350 \\ \hline
+Total      & 233  & 967 & 1,200
+\end{tabular}
+\end{center}
+\normalfont
+~\footnote{From Agresti's Categorical Data Analysis second edition}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item Interest lies in testing whether or not the proportion of high alcohol use
+  is the same in the four occupations
+\item $H_0:p_1 = p_2 = p_3 = p_4 = p$ 
+\item $H_a:$ at least two of the $p_j$ are unequal 
+\item $O_{11} = 32$, $E_{11} = 300 \times \frac{233}{1200}$
+\item $O_{12} = 268$, $E_{12} = 300 \times \frac{967}{1200}$
+\item ...
+\item Chi-squared statistic $\sum \frac{(0 - E)^2}{E} = 20.59$
+\item $df=(Rows - 1)(Columns - 1) = 3$
+\item Pvalue \texttt{pchisq(20.59, 3, lower.tail = FALSE)}$\approx 0$
+\end{itemize}
+\end{frame} 
+
+\section{Generalization}
+\begin{frame}\frametitle{Word distributions}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llllll}
+       & \multicolumn{4}{c}{Book} &\\
+Word      & 1   & 2   & 3   &  Total\\ \hline
+$a$       & 147 & 186 & 101 &  434\\
+$an$      & 25  & 26  & 11  &  62\\
+$this$    & 32  & 39  & 15  &  86\\
+$that$    & 94  & 105 & 37  &  236\\
+$with$    & 59  & 74  & 28  &  161\\
+$without$ & 18  & 10  & 10  &  38\\ \hline
+Total     & 375 & 440 & 202 &  1017\\
+  \end{tabular}
+\normalfont
+\end{center}
+~\footnote{From Rice Mathematical Statistics and Data Analysis, second edition}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item $H_0:$ The probabilities of each word \\
+  are the same for every book
+\item $H_a:$ At least two are different 
+\item $O_{11} = 147$ $E_{11} = 375 \times \frac{434}{1017}$
+\item $O_{12} = 186$ $E_{12} = 440 \times \frac{434}{1017}$
+\item ...
+\item $\sum \frac{(O - E)^2}{E} = 12.27$
+\item $df = (6 - 1) (3 - 1) = 10$ 
+\end{itemize}
+\end{frame}
+
+\section{Independence}
+\begin{frame}\frametitle{Testing independence}
+\ttfamily
+\begin{center}
+\begin{tabular}{clllll}  
+& \multicolumn{4}{c}{Wife's Rating} \\ 
+Husband & N & F & V & A & Tot               \\ \hline
+N & 7  &7  & 2  & 3  & 19 \\ 
+F & 2  &8  & 3  & 7  & 20 \\ 
+V & 1  &5  & 4  & 9  & 19 \\ 
+A & 2  &8  & 9  & 14 & 33 \\ \hline
+  & 12 &28 & 18 & 33 & 91 \\
+\end{tabular}
+\end{center}
+N=never, F=fairly often, V=very often, A=almost always \\
+~\footnote{From Agresti's Categorical Data Analysis second edition}
+\normalfont
+\end{frame}
+
+\begin{frame}\frametitle{Independence cont'd}
+\begin{itemize}
+\item $H_0:$ H and W ratings are independent
+\item $H_a:$ not independent
+\item $P(H = N ~\&~ W = A) = P(H = N)P(W = A)$ 
+\item $stat = \sum \frac{(O - E)^2}{E}$
+\item $O_{11} = 7$ $E_{11} = 91\times\frac{19}{91}\times\frac{12}{91} = 2.51$
+\item $E_{ij} = n_{i+}n_{+j}/n$
+\item $df = (Rows - 1)(Cols - 1)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Independence cont'd}
+\begin{verbatim}
+x<-matrix(c(7,7,2,3,
+            2,8,3,7,
+            1,5,4,9,
+            2,8,9,14),4)
+chisq.test(x)
+\end{verbatim} 
+\begin{itemize}
+\item $\sum \frac{(O - E)^2}{E} = 16.96$
+\item $df = (4 - 1)(4 - 1) = 9$ 
+\item $p-value = .049$
+\item Cell counts might be too small to use
+large sample approximation
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Equal distribution and independence test yield the same results
+\item Same test results if
+  \begin{itemize}
+  \item row totals are fixed 
+  \item column totals are fixed
+  \item total ss is fixed
+  \item none are fixed
+  \end{itemize}
+\item Note that this is common in statistics; mathematically
+  equivalent results are applied in different settings, but result in
+  different interpretations
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item  Chi-squared result requires large cell counts
+\item $df$ is always $(Rows - 1)(Columns - 1)$
+\item Generalizations of Fishers exact test can be used or continuity
+  corrections can be employed
+\end{itemize}
+\end{frame}
+
+\section{Monte Carlo}
+\begin{frame}[fragile]\frametitle{Exact permutation test}
+\begin{itemize}
+\item Reconstruct the individual data
+\begin{verbatim}
+W:NNNNNNNFFFFFFFVVAAANNFFFFFFFF ... 
+H:NNNNNNNNNNNNNNNNNNNFFFFFFFFFF ...
+\end{verbatim}
+\item Permute either the \texttt{W} or \texttt{H} row
+\item Recalculate the contingency table
+\item Calculate the $\chi^2$ statistic for each permutation
+\item Percentage of times it is larger than the observed value is an
+  exact P-value
+\begin{verbatim}
+chisq.test(x, simulate.p.value = TRUE)
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Chi-squared goodness of fit}
+Results from R's RNG 
+\begin{center}
+\ttfamily
+\begin{tabular}{llllll}
+      & $[0,.25)$ & $[.25, .5)$ & $[.5, .75)$ & $[.75, 1)$ & Total \\ \hline
+Count & 254 & 235 & 267 & 244 & 1000 \\
+TP    & .25 & .25 & .25 & .25 & 1 \\ \hline
+\end{tabular}
+\normalfont
+\end{center}
+\begin{itemize}
+\item $H_0:~p_1 = .25,~p_2 = .25,~ p_3 = .25,~ p_4 = .25$
+\item $H_a:$ any $p_i \neq$ it's hypothesized value 
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item $O_1 = 254$ $E_1 = 1000 \times .25 = 250$
+\item $O_2 = 235$ $E_2 = 1000 \times .25 = 250$
+\item $O_3 = 267$ $E_3 = 1000 \times .25 = 250$
+\item $O_4 = 244$ $E_4 = 1000 \times .25 = 250$
+\item $\sum \frac{(O - E)^2}{E} = 2.264$
+\item $df = 3$
+\item $P-value = .52$
+\end{itemize}
+\end{frame}
+
+\section{Goodness of fit testing}
+\begin{frame}\frametitle{Testing Mendel's hypothesis}
+\begin{center}  
+\ttfamily
+\begin{tabular}{llll}
+                 & \multicolumn{2}{c}{Phenotype} \\
+                 & Yellow  & Green   & Total \\ \hline
+Observed         & 6022    & 2001    & 8023\\
+TP               & .75     & .25     & 1   \\ 
+Expected         & 6017.25 & 2005.75 & 8023\\ \hline 
+\end{tabular}
+\normalfont
+\end{center}
+\begin{itemize}
+\item $H_0:p_1 = .75, ~ p_2 = .25$ 
+\item $\sum \frac{(0-E)^2}{E} = \frac{(6022 - 6017.25)^2}{6017.25} +
+  \frac{(2001 - 2005.75)^2}{2005.75} = .015$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item $df = 1$
+\item P-value $= .90$
+\item Fisher combined several of Mendel's tables
+\item $\sum \chi^2_{v_i} \sim \chi^2_{\sum v_i}$
+\item Statistic $42$, $df = 84$, P-value $= .99996$
+\item Agreement with theoretical counts is perhaps too good?
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes on GOF}
+\begin{itemize}
+\item Test of whether or not observed 
+  counts equal theoretical values
+\item Test statistic is $\sum \frac{(0-E)^2}{E}$
+\item TS follows $\chi^2$ distribution for large $n$
+\item $df$ is the number of cells minus 1
+\item Undirected alternative is problematic
+\item Especially useful for testing RNGs
+\item Kolmogorov/Smirnov test is an  alternative 
+  test that does not require  discretization but often
+  has low power
+\end{itemize}
+\end{frame}
+
+\end{document}
