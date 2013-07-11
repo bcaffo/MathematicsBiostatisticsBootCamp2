@@ -1,0 +1,278 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+ \title{Mathematical Biostatistics Boot Camp 2: Lecture 7, Fisher's Exact Test}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\section{Fisher's exact test}
+\begin{frame}\frametitle{Fisher's exact test}
+\begin{itemize}
+\item Fisher's exact test is ``exact'' because it guarantees the $\alpha$ rate, 
+  regardless of the sample size
+\item Example, chemical toxicant and 10 mice
+\begin{center}
+  \begin{tabular}{lccl}
+        & Tumor & None     & Total \\ \hline
+Treated & 4     & 1        & 5 \\ 
+Control & 2     & 3        & 5 \\ \hline
+Total   & 6     & 4        &
+  \end{tabular}
+\end{center}
+\item $p_1 = $ prob of a tumor for the treated mice
+\item $p_2 = $ prob of a tumor for the untreated mice
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+  \begin{itemize}
+  \item $H_0:p_1 = p_2 = p$
+  \item Can't use $Z$ or $\chi^2$ because SS is small
+  \item Don't have a specific value for $p$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Fisher's exact test}
+  \begin{itemize}
+  \item Under the null hypothesis every permutation is equally likely
+  \item observed data
+\begin{verbatim}
+Treatment : T T T T T C C C C C         
+Tumor     : T T T T N T T N N N 
+\end{verbatim}
+  \item permuted
+\begin{verbatim}
+Treatment : T C C T C T T C T C         
+Tumor     : T T T T N T T N N N 
+\end{verbatim}
+  \item Fisher's exact test uses this null distribution to test the
+    hypothesis that $p_1 = p_2$
+  \end{itemize}
+\end{frame}
+
+\section{The hypergeometric distribution}
+\begin{frame}\frametitle{Hyper-geometric distribution}
+  \begin{itemize}
+  \item $X$ number of tumors for the treated
+  \item $Y$ number of tumors for the controls
+  \item $H_0: p_1 = p_2 = p$
+  \item Under $H_0$
+    \begin{itemize}
+    \item  $X \sim \mbox{Binom}(n_1, p)$
+    \item  $Y \sim \mbox{Binom}(n_2, p)$
+    \item  $X + Y \sim \mbox{Binom}(n_1 + n_2, p)$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+$$P(X = x ~|~ X + Y = z) = 
+\frac{
+\left(
+\begin{array}{c}
+n_1 \\ x
+\end{array}
+\right)
+\left(
+\begin{array}{c}
+n_2 \\ z - x
+\end{array}
+\right)
+}
+{
+\left(
+\begin{array}{c}
+n_1 + n_2 \\ z
+\end{array}
+\right)
+}
+$$
+This is the hypergeometric pmf
+\end{frame}
+
+\begin{frame}\frametitle{Proof}
+$$
+P(X = x) = \left( \begin{array}{c} n_1 \\ x \end{array} \right) p^x(1-p)^{n_1 - x}
+$$ \ \\
+$$
+P(Y = z-x) = \left( \begin{array}{c} n_2 \\ z-x \end{array} \right) p^{z-x}(1-p)^{n_2 - z + x}
+$$ \ \\
+$$
+P(X + Y = z) = \left( \begin{array}{c} n_1 + n_2 \\ z \end{array} \right) p^z(1-p)^{n_1+n_2 -z}
+$$ 
+\end{frame}
+\begin{frame}\frametitle{Continued}
+\begin{eqnarray*}
+P(X = x ~ | ~ X + Y = z) & = &\frac{P(X = x, X + Y = z)}{P(X + Y = z)} \\
+                         &   & \\
+                         & = &\frac{P(X = x, Y = z - x)}{P(X + Y = z)} \\
+                         &   & \\
+                         & = &\frac{P(X = x)P(Y = z-x)}{P(X + Y = z)}
+\end{eqnarray*}
+Plug in and finish off yourselves
+\end{frame}
+
+
+\section{Fisher's exact test in practice}
+\begin{frame}\frametitle{Fisher's exact test}
+  \begin{itemize}
+  \item More tumors under the treated than the controls
+  \item Calculate an {\em exact} P-value 
+  \item Use the conditional distribution = hypergeometric
+  \item Fixes both the row and the column totals
+  \item Yields the same test regardless of whether the
+    rows or columns are fixed
+  \item Hypergeometric distribution is the same as the
+    permutation distribution given before
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Tables supporting $H_a$}
+\begin{itemize}
+\item Consider $H_a : p_1 > p_2$
+\item P-value requires tables as extreme or more extreme
+  (under $H_a$) than the one observed
+\item Recall we are fixing the row and column totals
+\item Observed table
+\begin{center}
+Table 1 = 
+  \begin{tabular}{cc|l} 
+4     & 1        & 5 \\  
+2     & 3        & 5 \\ \hline
+6     & 4        &
+  \end{tabular}
+\end{center}
+\item More extreme tables in favor of the alternative
+\begin{center}
+Table 2 = 
+  \begin{tabular}{cc|l}
+5     & 0       & 5 \\ 
+1     & 4       & 5 \\\hline 
+6     & 4       &
+  \end{tabular} 
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Calculations}
+\begin{eqnarray*}
+P(\mbox{Table 1}) & = & P(X = 4 | X + Y = 6) \\ & = &
+\frac{\left(\begin{array}{c} 5 \\ 4 \end{array}\right) 
+\left(\begin{array}{c} 5 \\ 2 \end{array} \right)}
+{\left( \begin{array}{c} 10 \\ 6 \end{array} \right)} = 0.238
+\end{eqnarray*}
+\begin{eqnarray*}
+P(\mbox{Table 2}) & = & P(X = 5 | X + Y = 6) \\ & = &
+\frac{\left(\begin{array}{c} 5 \\ 5 \end{array}\right) 
+\left(\begin{array}{c} 5 \\ 1 \end{array} \right)}
+{\left( \begin{array}{c} 10 \\ 6 \end{array} \right)} = 0.024
+\end{eqnarray*}
+P-value = 0.238 + 0.024 = 0.262
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{R code}
+\begin{verbatim}
+dat <- matrix(c(4, 1, 2, 3), 2)
+fisher.test(dat, alternative = "greater")
+
+------------------output----------------
+        Fisher's Exact Test for Count Data
+
+data:  dat 
+p-value = 0.2619
+alt hypoth: true odds ratio  is greater than 1 
+95 percent confidence interval:
+ 0.3152217       Inf 
+sample estimates:
+odds ratio 
+  4.918388 
+\end{verbatim}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Two sided p-value = 2$\times$one sided P-value \\
+  (There are other methods which we will not discuss)
+\item P-values are usually large for small $n$ 
+\item Doesn't distinguish between rows or columns 
+\item The common value of $p$ under the null hypothesis
+  is called a nuisance parameter
+\item Conditioning on the total number of successes, $X + Y$, eliminates
+  the nuisance parameter, $p$
+\item Fisher's exact test guarantees the type I error rate
+\item Exact unconditional P-value
+$$
+\sup_p P(X/n_1 > Y/n_2; p)
+$$
+\end{itemize}
+\end{frame}
+
+\section{Monte Carlo}
+\begin{frame}[fragile]\frametitle{Monte Carlo}
+\begin{itemize}
+\item Observed table $X = 4$
+\begin{verbatim} 
+Treatment : T T T T T C C C C C         
+Tumor     : T T T T N T T N N N 
+\end{verbatim}
+\item Permute the first row
+\begin{verbatim}
+Treatment : T C T T C C C T T T     
+Tumor     : T T T T N T T N N N
+\end{verbatim}
+\item Simulated table $X = 3$ 
+\item Do over and over 
+\item Calculate the proportion of tables for 
+which the simulated $X \geq 4$ 
+\item This proportion is a Monte Carlo estimate
+for Fisher's exact P-value
+\end{itemize}
+\end{frame}
+
+\end{document}
