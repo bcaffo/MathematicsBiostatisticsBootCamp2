@@ -1,0 +1,372 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\cpp}[1]{\texttt{#1}}
+\newcommand{\logit}{\mathrm{logit}}
+
+\title{Mathematical Biostatistics Boot Camp 2: 
+Lecture 11, Matched Two by Two Tables}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\section{Matched pairs data}
+\begin{frame}\frametitle{Matched pairs binary data}
+\begin{center}
+\ttfamily
+  \begin{tabular}{lccc}
+First & \multicolumn{2}{c}{Second Survey} & \\ \cline{2-3}
+survey & Approve & Disapprove & Total \\ \hline
+Approve & 794 & 150 & 944 \\
+Disapprove & 86 & 570 & 656 \\
+Total & 880 & 720 & 1600 \\ \hline
+  \end{tabular}
+\normalfont
+\end{center}
+\begin{center}
+\ttfamily
+  \begin{tabular}{lccc}
+          & \multicolumn{2}{c}{Cases} & \\ \cline{2-3}
+Controls  & Exposed & Unexposed & Total \\ \hline
+Exposed   & 27      & 29        & 56  \\
+Unexposed &  3      &  4        &  7  \\
+Total     & 30      &  33       & 63   \\ \hline
+  \end{tabular}
+\normalfont
+\end{center}
+~\footnote{Both data sets from Agresti, Categorical Data Analysis, second edition}
+\end{frame}
+
+\section{Dependence}
+\begin{frame}\frametitle{Dependence}
+\begin{itemize}
+\item Matched binary can arise from
+  \begin{itemize}
+  \item Measuring a response at two occasions
+  \item Matching on case status in a retrospective study
+  \item Matching on exposure status in a prospective or cross-sectional study
+  \end{itemize}
+\item The pairs on binary observations are dependent, so our
+  existing methods do not apply
+\item We will discuss the process of making conclusions about
+  the marginal probabilities and odds
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notation}
+  \begin{center}
+\ttfamily
+    \begin{tabular}{cccc} 
+   & \multicolumn{2}{c}{time 2} & \\
+time 1 & Yes & No & Total\\
+  Yes  & $n_{11}$ & $n_{12}$ & $n_{1+}$\\
+   no  & $n_{21}$ & $n_{22}$ & $n_{2+}$\\
+Total  & $n_{+1}$ & $n_{+2}$ & $n$
+    \end{tabular}
+    \begin{tabular}{cccc} 
+   & \multicolumn{2}{c}{time 2} & \\
+time 1 & Yes & No & Total\\
+  Yes  & $\pi_{11}$ & $\pi_{12}$ & $\pi_{1+}$\\
+   no  & $\pi_{21}$ & $\pi_{22}$ & $\pi_{2+}$\\
+Total  & $\pi_{+1}$ & $\pi_{+2}$ & $1$
+    \end{tabular}
+  \end{center}
+  \begin{itemize}
+  \item We assume that the $(n_{11},n_{12},n_{21},n_{22})$ are multinomial
+    with $n$ trials and probabilities $(\pi_{11},\pi_{12},\pi_{21},\pi_{22})$
+  \item $\pi_{1+}$ and $\pi_{+1}$ are the marginal
+    probabilities of a yes response at the two occasions
+  \item $\pi_{1+} = P(\mbox{Yes} ~|~ \mbox{Time 1})$
+  \item $\pi_{+1} = P(\mbox{Yes} ~|~ \mbox{Time 2})$
+  \end{itemize}
+\end{frame}
+
+\section{Marginal homogeneity}
+\begin{frame}\frametitle{Marginal homogeneity}
+\begin{itemize}
+\item Marginal homogeneity is the hypothesis $H_0:\pi_{1+} = \pi_{+1}$
+\item Marginal homogeneity is equivalent to symmetry
+  $H_0:\pi_{12} = \pi_{21}$ 
+\item The obvious estimate of  $\pi_{12} - \pi_{21}$ is 
+  $n_{12}/n - n_{21}/n$
+\item Under $H_0$ a consistent estimate of the variance is
+   $(n_{12} + n_{21}) / n ^ 2$ 
+\item Therefore 
+  $$
+  \frac{(n_{12} - n_{21})^2}{n_{12} + n_{21}}
+  $$
+follows an asymptotic $\chi^2$ distribution with 1 degree of freedom
+\end{itemize}
+\end{frame}
+
+\section{McNemar's test}
+\begin{frame}\frametitle{McNemar's test}
+\begin{itemize}
+\item The test from the previous page is called McNemar's test
+\item Notice that only the discordant cells enter into the test
+  \begin{itemize}
+  \item $n_{12}$ and $n_{21}$ carry the relevant information about whether
+    or not $\pi_{1+}$ and $\pi_{+1}$ differ
+  \item $n_{11}$ and $n_{22}$ contribute information to estimating the
+    magnitude of this difference
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example}
+\begin{itemize}
+\item Test statistic $\frac{(80 - 150)^2}{86 + 150} = 17.36$
+\item P-value = $3\times 10^{-5}$
+\item Hence we reject the null hypothesis and conclude that there is
+evidence to suggest a change in opinion
+between the two polls
+\item In R
+\begin{verbatim}
+mcnemar.test(matrix(c(794, 86, 150, 570), 2), 
+             correct = FALSE)
+\end{verbatim}
+The \texttt{correct} option applies a continuity correction
+\end{itemize}
+\end{frame}
+ 
+\section{Estimation}
+\begin{frame}\frametitle{Estimation}
+\begin{itemize}
+\item Let $\hat \pi_{ij} = n_{ij} / n$ be the sample proportions
+\item $d = \hat \pi_{1+} - \hat \pi_{+1} = (n_{12} - n_{21})/n$ estimates the difference
+  in the marginal proportions
+\item The variance of $d$ is 
+$$ 
+  \sigma_d^2 = \{\pi_{1+}(1 - \pi_{1+}) + \pi_{+1}(1 - \pi_{+1}) - 2 (\pi_{11}\pi_{22} - \pi_{12}\pi_{21})\}/n
+$$
+\item $\frac{d - (\pi_{1+} - \pi_{+1})}{\hat \sigma_d}$ follows an asymptotic normal distribution
+\item Compare $\sigma_d^2$ with what we would use if the proportions were independent
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{itemize}
+\item $d = 944 / 1600 - 880 / 1600 = .59 - .55 = .04$ 
+\item $\hat \pi_{11} = .50$, $\hat \pi_{12} =.09$, $\hat \pi_{21} = .05$, $\hat \pi_{22} = .36$ 
+\item $\hat \sigma^2_d = \{.59(1-.59)+.55(1-.55) - 2(.50\times .36 - .09\times .05)\} / 1600$ 
+\item $\hat \sigma_d = .0095$
+\item 95\% CI - $.04 \pm 1.96 \times .0095 = [.06, .02]$ 
+\item Note ignoring the dependence yields $\hat \sigma_d = .0175$
+\end{itemize}
+\end{frame}
+
+\section{Relationship with CMH}
+\begin{frame}\frametitle{Relationship with CMH test}
+\begin{itemize}
+\item Each subject's (or matched pair's) responses can be represented as one
+of four tables.
+  \begin{center}
+\ttfamily
+    \begin{tabular}{lll}
+   & \multicolumn{2}{c}{Response} \\
+Time   & Yes      & No  \\
+  First      & 1        & 0         \\
+  Second   & 1        & 0         \\
+    \end{tabular}
+    \begin{tabular}{lll}
+   & \multicolumn{2}{c}{Response} \\
+Time   & Yes      & No  \\
+  First      & 1        & 0         \\
+  Second   & 0        & 1         \\
+    \end{tabular} \\
+    \begin{tabular}{lll}
+   & \multicolumn{2}{c}{Response} \\
+Time   & Yes      & No  \\
+  First      & 0        & 1         \\
+  Second   & 1        & 0         \\
+    \end{tabular}
+    \begin{tabular}{lll}
+   & \multicolumn{2}{c}{Response} \\
+Time   & Yes      & No  \\
+  First      & 0        & 1         \\
+  Second   & 0        & 1         \\
+    \end{tabular}
+ \end{center}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Result}
+\begin{itemize}
+\item McNemar's test is equivalent to the CMH test where subject is
+  the stratifying variable and each 2$\times$2 table is the observed
+  zero-one table for that subject
+\item This representation is only useful for conceptual purposes
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Exact version}
+\begin{itemize}
+\item Consider the cells $n_{12}$ and $n_{21}$
+\item Under $H_0$, $\pi_{12} / (\pi_{12} + \pi_{21}) = .5$
+\item Therefore, under $H_0$, $n_{21} ~|~ n_{21} + n_{12}$ is binomial
+  with success probability $.5$ and $n_{21} + n_{12}$ trials
+\item We can use this result to come up with an exact P-value for
+  matched pairs data
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item Consider the approval rating data
+\item $H_0 : \pi_{21} = \pi_{12}$ versus $H_a : \pi_{21} < \pi_{12}$ ($\pi_{+1} < \pi_{1+}$)
+\item $P(X \leq 86 ~|~ 86 + 150) = .000$ where $X$ is binomial with
+  $236$ trials and success probability $p = .5$
+\item For two sided tests, double the smaller of the two one-sided
+  tests
+\end{itemize}
+\end{frame}
+
+
+\section{Marginal odds ratios}
+\begin{frame}\frametitle{Estimating the marginal odds ratio}
+\begin{itemize}
+\item The marginal odds ratio is
+$$
+\frac{\pi_{1+}/\pi_{2+}}{\pi_{+1}/\pi_{+2}}
+  = \frac{\pi_{1+}\pi_{+2}}{\pi_{+1}\pi_{2+}}
+$$
+\item The maximum likelihood estimate of the margina {\em log} odds ratio is
+$$\hat \theta = \log\{\hat \pi_{1+} \hat \pi_{+2}/ \hat \pi_{+1} \hat \pi_{2+}\}$$
+\item The asymptotic variance of this estimator is
+  \begin{eqnarray*}
+&   & \{ (\pi_{1+}\pi_{2+})^{-1} + (\pi_{+1}\pi_{+2})^{-1} \\
+& - & 2(\pi_{11}\pi_{22} - \pi_{12}\pi_{21})/ (\pi_{1+}\pi_{2+}\pi_{+1}\pi_{+2})\}/n
+  \end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{itemize}
+\item In the approval rating example the marginal OR compares
+the odds of approval at time 1 to that at time 2
+\item $\hat \theta = \log(944\times 720 / 880 \times 656) = .16$
+\item Estimated standard error = $.039$
+\item CI for the log odds ratio = $.16 \pm 1.96 \times .039 = [.084, .236]$
+\end{itemize}
+\end{frame}
+
+\section{Conditional versus marginal}
+\begin{frame}\frametitle{Conditional versus marginal odds}
+\begin{center}
+\ttfamily
+  \begin{tabular}{lccc}
+First & \multicolumn{2}{c}{Second Survey} & \\ \cline{2-3}
+survey & Approve & Disapprove & Total \\ \hline
+Approve & 794 & 150 & 944 \\
+Disapprove & 86 & 570 & 656 \\
+Total & 880 & 720 & 1600 \\ \hline
+  \end{tabular}
+\normalfont
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Conditional versus marginal odds}
+\begin{itemize}
+\item $n_{ij}$ cell counts 
+\item $n$ total sample size
+\item $\pi_{ij}$ the multinomial probabilities
+\item The ML estimate of the marginal {\em log} odds ratio is
+$$\hat \theta = \log\{\hat \pi_{1+} \hat \pi_{+2}/ \hat \pi_{+1} \hat \pi_{2+}\}$$
+\item The asymptotic variance of this estimator is
+  \begin{eqnarray*}
+&   & \{ (\pi_{1+}\pi_{2+})^{-1} + (\pi_{+1}\pi_{+2})^{-1} \\
+& - & 2(\pi_{11}\pi_{22} - \pi_{12}\pi_{21})/ (\pi_{1+}\pi_{2+}\pi_{+1}\pi_{+2})\}/n
+  \end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+\section{Conditional ML}
+\begin{frame}\frametitle{Conditional ML}
+\begin{itemize}
+\item Consider the following model
+\begin{eqnarray*}
+&&\mathrm{logit}\{P(\mbox{Person} ~i~ \mbox{says Yes at Time 1})\} = \alpha + U_i\\
+&&\mathrm{logit}\{P(\mbox{Person} ~i~ \mbox{says Yes at Time 2})\} = \alpha + \gamma + U_i
+\end{eqnarray*}
+\item Each $U_i$ contains person-specific effects. A person with a large $U_i$ is likely
+  to answer Yes at both occasions.
+\item $\gamma$ is the {\bf log odds ratio} comparing a response of Yes at Time 1 to 
+  a response of Yes at Time 2.
+\item $\gamma$ is {\bf subject specific effect}. If you subtract the log odds of a yes response
+  for two different people, the $U_i$ terms would not cancel
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Conditional ML cont'd}
+\begin{itemize}
+\item One way to eliminate the $U_i$ and get a good estimate of $\gamma$ is 
+  to condition on the total number of Yes responses for each person
+  \begin{itemize}
+  \item If they answered Yes or No on both occasions then you know both responses
+  \item Therefore, only discordant pairs have any relevant information
+    after conditioning
+  \end{itemize}
+\item The conditional ML estimate for $\gamma$  and its SE turn out to be
+$$
+\log\{n_{21}/n_{12}\} ~~~~~ \sqrt{1/n_{21} + 1/n_{12}}
+$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Distinctions in interpretations}
+\begin{itemize}
+\item The marginal ML has a marginal interpretation. The effect is averaged over
+  all of the values of $U_i$. 
+\item The conditional ML estimate has a subject specific interpretation. 
+\item Marginal interpretations are more useful for policy type statements. Policy
+  makers tend to be interested in how factors influence populations.
+\item Subject specific interpretations are more useful in clinical applications. 
+  Physicians are interested in how factors influence individuals.
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}

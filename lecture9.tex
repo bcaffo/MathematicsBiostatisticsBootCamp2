@@ -1,0 +1,307 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+\title{Mathematical Biostatistics Boot Camp 2: 
+Lecture 9, Simpson's Paradox and Confounding}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\section{Simpson's paradox}
+\begin{frame}\frametitle{Simpson's (perceived) paradox}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llccr}
+         &             & \multicolumn{2}{c}{Death penalty} &     \\ \cline{3-4}
+Victim   & Defendant   &  yes  & no                        & \% yes \\ \hline
+White & White & 53 & 414 & 11.3 \\
+      & Black & 11 & 37  & 22.9 \\
+Black & White & 0  & 16  &  0.0 \\
+      & Black & 4  & 139 &  2.8 \\ \hline
+      & White & 53 & 430 & 11.0 \\
+      & Black & 15 & 176 &  7.9 \\ \hline
+White &       & 64 & 451 & 12.4 \\
+Black &       &  4 & 155 &  2.5 \\ \hline
+  \end{tabular}
+\normalfont
+\end{center}
+~\footnote{From Agresti, Categorical Data Analysis, second edition}
+\end{frame}
+
+\begin{frame}\frametitle{Discussion}
+\begin{itemize}
+\item Marginally, white defendants received the death penalty a greater percentage of 
+  time than black defendants
+\item Across white and black victims, black defendant's received the
+  death penalty a greater percentage of time than white defendants
+\item Simpson's paradox refers to the fact that marginal and conditional associations
+  can be opposing
+\item The death penalty was enacted more often for the murder of a white victim than
+  a black victim. Whites tend to kill whites, hence the larger marginal association.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{itemize}
+\item Wikipedia's entry on Simpson's paradox gives an example
+  comparing two player's batting averages
+  \begin{center}
+    \ttfamily
+    \small
+    \begin{tabular}{llll} 
+               & First             & Second             & Whole  \\
+               & Half              & Half               & Season \\ \hline
+      Player 1 & $~4 / 10 ~~(.40)$ ~~& $25 / 100 ~(.25)$ ~~& $29 / 110 ~(.26)$ \\
+      Plater 2 & $35 / 100 ~(.35)$ ~~& $~2 / 10~ ~(.20)$ ~~& $37 / 110 ~(.34)$ \\ \hline 
+    \end{tabular}
+    \normalfont
+  \end{center}
+\item Player 1 has a better batting average than Player 2 in both the
+  first and second half of the season, yet has a worse batting average
+  overall
+\item Consider the number of at-bats 
+\end{itemize}
+\end{frame}
+
+\section{Berkeley data}
+\begin{frame}[fragile]\frametitle{Berkeley admissions data}
+\begin{itemize}
+\item The Berkeley admissions data is a well known data set regarding Simpsons paradox
+\begin{verbatim}
+?UCBAdmissions
+data(UCBAdmissions)
+     apply(UCBAdmissions, c(1, 2), sum)
+          Gender
+Admit      Male Female
+  Admitted 1198    557
+  Rejected 1493   1278
+           .445   .304 <- Acceptance rate
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+Acceptance rate by department
+\begin{verbatim}
+> apply(UCBAdmissions, 3, 
+        function(x) c(x[1] / sum(x[1 : 2]), 
+                      x[3] / sum(x[3 : 4])
+                      )
+        ) 
+Dept  M    F
+   A 0.62 0.82
+   B 0.63 0.68
+   C 0.37 0.34
+   D 0.33 0.35
+   E 0.28 0.24
+   F 0.06 0.07
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+Why? The application rates by department
+\begin{verbatim}
+> apply(UCBAdmissions, c(2, 3), sum)
+        Dept
+Gender     A   B   C   D   E   F
+  Male   825 560 325 417 191 373
+  Female 108  25 593 375 393 341
+\end{verbatim}
+\end{frame}
+
+\begin{frame}\frametitle{Discussion}
+\begin{itemize}
+\item Mathematically, Simpson's pardox is not paradoxical
+  \begin{eqnarray*}
+    a / b & < & c / d\\
+    e / f & < & g / h \\
+    (a + e) / (b + f) & > & (c + g) / (d + h)
+  \end{eqnarray*}
+\item More statistically, it says that the apparent relationship between two
+  variables can change in the light or absence of a third
+\end{itemize}
+\end{frame}
+
+\section{Confounding}
+\begin{frame}\frametitle{Confounding}
+\begin{itemize}
+\item Variables that are correlated with both the explanatory and response
+  variables can distort the estimated effect
+  \begin{itemize}
+  \item Victim's race was correlated with defendant's race and death penalty
+  \end{itemize}
+\item One strategy to adjust for confounding variables is to {\bf stratify}
+  by the confounder and then combine the strata-specific estimates
+  \begin{itemize}
+  \item Requires appropriately weighting the strata-specific estimates
+  \end{itemize}
+\item Unnecessary stratification reduces precision
+\end{itemize}
+\end{frame}
+
+\section{Weighting}
+\begin{frame}\frametitle{Aside: weighting}
+\begin{itemize}
+\item Suppose that you have two unbiased scales, one with variance $1$
+  lb and and one with variance $9$ lbs
+\item Confronted with weights from both scales, would you give both measurements
+  equal creedance?
+\item Suppose that $X_1 \sim N(\mu, \sigma_1^2)$ and $X_2 \sim N(\mu, \sigma_2^2)$
+where $\sigma_1$ and $\sigma_2$ are both known
+\item log-likelihood for $\mu$
+  $$
+  -(x_1 - \mu)^2 / 2\sigma_1^2 - (x_2 - \mu)^2 / 2\sigma_2^2
+  $$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item Derivative wrt $\mu$ set equal to 0
+$$
+(x_1 - \mu) / \sigma_1^2 + (x_2 - \mu) / \sigma_2^2 = 0 
+$$
+\item Answer $$\frac{x_1 r_1 + x_2r_2}{r_1 + r_2} = x_1 p + x_2 (1 - p)$$
+where $r_i = 1/\sigma_i^2$ and $p = r_1 / (r_1 + r_2)$
+\item Note, if $X_1$ has very low variance, its term dominates the estimate of $\mu$
+\item General principle: instead of averaging over several unbiased estimates, take an average weighted according to inverse variances
+\item For our example $\sigma_1^2 = 1$, $\sigma_2^2 = 9$ so $p = .9$
+\end{itemize}
+\end{frame}
+
+
+\section{Mantel/Haenszel estimator}
+\begin{frame}\frametitle{Mantel/Haenszel estimator}
+\begin{itemize}
+\item Let $n_{ijk}$ be entry $i$, $j$ of table $k$ 
+\item  The $k^{th}$ sample odds ratio is $\hat \theta_k = \frac{n_{11k}n_{22k}}{n_{12k}n_{21k}}$
+\item The Mantel Haenszel estimator is of the form $\hat \theta = \frac{\sum_k r_k \hat \theta_k}{\sum_k r_k}$
+\item The weights are $r_k = \frac{n_{12k}n_{21k}}{n_{++k}}$
+\item The estimator simplifies to $\hat \theta_{MH} = \frac{\sum_k n_{11k}n_{22k}/n_{++k}}{\sum_k n_{12k}n_{21k}/n_{++k}}$
+\item SE of the log is given in Agresti (page 235) or Rosner (page 656)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\ttfamily\small
+\begin{verbatim}
+                          Center
+     1      2      3      4      5      6     7      8
+   S  F   S  F   S  F   S  F   S  F   S  F   S  F   S  F
+T 11 25  16  4  14  5   2 14   6 11   1 10   1  4   4  2
+C 10 27  22 10   7 12   1 16   0 12   0 10   1  8   6  1
+n   73     52     38     33     29     21     14     13
+\end{verbatim}
+S - Success, F - failure \\
+T - Active Drug,  C - placebo\footnote{Data from Agresti, Categorical Data Analysis, second edition}
+\normalfont \\
+$$
+\hat \theta_{MH} = 
+\frac{(11 \times 27) / 73 + (16 \times 10)/25 + \ldots + (4\times 1)/13}
+{(10 \times 25) / 73 + (4 \times 22) / 25 + \ldots + (6 \times 2 ) / 13)} = 2.13
+$$ \\
+Also $\log\hat\theta_{MH} = .758$ and $\hat{SE}_{\log \hat\theta_{MH}} = .303$
+\end{frame}
+
+\begin{frame}\frametitle{CMH test}
+\begin{itemize}
+\item $H_0:\theta_1=\ldots=\theta_k = 1$ versus $H_a:\theta_1=\ldots=\theta_k \neq 1$
+\item The CHM test applies to other alternatives, but is most powerful for the
+  $H_a$ given above
+\item Same as testing conditional independence of the response and exposure given the
+  stratifying variable
+\item CMH conditioned on the rows and columns for each of the $k$ contingency tables
+  resulting in $k$ hypergeometric distributions and leaving only the $n_{11k}$ cells
+  free
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{CMH test cont'd}
+\begin{itemize}
+\item Under the conditioning and under the null hypothesis 
+  \begin{itemize} 
+  \item $E(n_{11k})  = n_{1+k}n_{+1k}/n_{++k}$
+  \item $\Var(n_{11k}) = n_{1+k}n_{2+k}n_{+1k}n_{+2k}/n_{++k}^2(n_{++k} - 1)$ 
+  \end{itemize}
+\item The CMH test statistic is 
+  $$
+  \frac{[\sum_k \{n_{11k} - E(n_{11k})\}]^2}{\sum_k \Var(n_{11k})}
+  $$ 
+\item For large sample sizes and under $H_0$, this test statistic is $\chi^2(1)$ (regardless
+  of how many tables you are summing up)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{In R}
+\begin{verbatim}
+dat <- array(c(11, 10, 25, 27,  16, 22,  4, 10,
+               14,  7,  5, 12,   2,  1, 14, 16,
+                6,  0, 11, 12,   1,  0, 10, 10,
+                1,  1,  4,  8,   4,  6,  2,  1),
+             c(2, 2, 8))
+mantelhaen.test(dat, correct = FALSE)
+\end{verbatim}
+Results: $CMH_{TS} = 6.38$ \\
+P-value: $.012$ \\
+Test presents evidence to suggest that the treatment and
+response are not conditionally independent given center
+\end{frame}
+
+\begin{frame}\frametitle{Some final notes on CMH}
+\begin{itemize}
+\item It's possible to perform an analogous test in a random effects
+  logit model that benefits from a complete model specification
+\item It's also possible to test heterogeneity of the strata-specific
+  odds ratios
+\item Exact tests (guarantee the type I error rate) are also possible
+  \texttt{exact = TRUE} in R
+\end{itemize}
+\end{frame}
+
+
+\end{document}

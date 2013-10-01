@@ -1,0 +1,451 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+ \title{Mathematical Biostatistics Boot Camp 2: Lecture }
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\begin{frame}\frametitle{Pump failure data}
+\begin{center}
+\ttfamily
+\begin{tabular}{llllll} 
+Pump     & 1     & 2     & 3     & 4      & 5     \\ \hline
+Failures & 5     & 1     & 5     & 14     & 3     \\ 
+Time     & 94.32 & 15.72 & 62.88 & 125.76 & 5.24  \\ \hline \\
+Pump     & 6     & 7     & 8     & 9      & 10    \\ \hline
+Failures & 19    & 1     & 1     & 4      & 22    \\ 
+Time     & 31.44 & 1.05  & 1.05  & 2.10   & 10.48 \\ \hline 
+\end{tabular}
+\end{center}
+From Casella and Robert, Monte Carlo Statistical Methods; first edition
+\normalfont \normalsize
+\end{frame}
+
+\section{The Poisson distribution}
+\begin{frame}\frametitle{The Poisson distribution}
+\begin{itemize}
+\item Used to model counts
+\item The Poisson mass function is
+$$
+P(X = x; \lambda) = \frac{\lambda^x e^{-\lambda}}{x!}
+$$
+for $x=0,1,\ldots$
+\item The mean of this distribution is $\lambda$
+\item The variance of this distribution is $\lambda$
+\item Notice that $x$ ranges from $0$ to $\infty$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Some uses for the Poisson distribution}
+\begin{itemize}
+\item Modeling event/time data
+\item Modeling radioactive decay
+\item Modeling survival data
+\item Modeling unbounded count data 
+\item Modeling contingency tables
+\item Approximating binomials when $n$ is large and $p$ is small
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Definition}
+\begin{itemize}
+\item $\lambda$ is the mean number of events per unit time
+\item Let $h$ be very small 
+\item Suppose we assume that 
+  \begin{itemize}
+  \item Prob. of an event in an interval of length $h$ is $\lambda h$
+    while the prob. of more than one event is negligible
+  \item Whether or not an event occurs in one small interval
+    does not impact whether or not an event occurs in another
+    small interval
+  \end{itemize}
+then, the number of events per unit time is Poisson with mean $\lambda$ 
+\end{itemize}
+\end{frame}
+
+\section{Poisson approximation to the binomial}
+\begin{frame}\frametitle{Poisson approximation to the binomial}
+\begin{itemize}
+\item When $n$ is large and $p$ is small the Poisson distribution
+  is an accurate approximation to the binomial distribution
+\item Notation
+  \begin{itemize}
+  \item $\lambda = n p$
+  \item $X \sim \mbox{Binomial}(n, p)$, $\lambda = n p$ and
+  \item $n$ gets large 
+  \item $p$ gets small
+  \item $\lambda$ stays constant
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Proof} Rice Mathematical Statistics and Data Analysis page 41
+\begin{eqnarray*}
+  P(X = k) & = & \frac{n!}{k!(n-k)!} p^k (1 - p)^{n-k} \\ \\
+           & = & \frac{n!}{k!(n-k)!} \left(\frac{\lambda}{n}\right)^k\left(1 - \frac{\lambda}{n}\right)^{n-k} \\ \\
+           & = & \frac{n!}{(n-k)!n^k} \times \left(1 - \frac{\lambda}{n}\right)^{-k} \times \frac{\lambda^k}{k!}\left(1 - \frac{\lambda}{n}\right)^n \\ \\
+           & \rightarrow & 1 \times 1 \times \frac{\lambda^k}{k!} e^{-\lambda} \\ \\
+           & = & \frac{\lambda^k}{k!} e^{-\lambda}
+\end{eqnarray*}
+\end{frame}
+
+ \begin{frame}\frametitle{Notes}
+ \begin{itemize}
+ \item That $(1 - \lambda/n)^n$ converges to $e^{-\lambda}$ for large $n$ is 
+   a very old mathematical fact
+ \item We can show that $\frac{n!}{(n-k)!n^k}$ goes to one easily because
+   $$
+   \frac{n!}{(n-k)!n^k} = 1 \times \left(1 - \frac{1}{n}\right) \times \left(1 - \frac{2}{n}\right) \times \ldots
+   \times \left(1 - \frac{k - 1}{n}\right)
+   $$
+   each term goes to 1
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+Some example uses of the Poisson distribution
+\begin{itemize}
+\item deaths per day in a city 
+\item homicides witnessed in a year
+\item teen pregnancies per month
+\item Medicare claims per day
+\item cases of a disease per year
+\item cars passing an intersection in a day
+\item telephone calls received by a switchboard in an hour
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Some results}
+\begin{itemize}
+\item If $X \sim \mbox{Poisson}(t\lambda)$ then 
+$$
+\frac{X - t\lambda}{\sqrt{t\lambda}} = \frac{X - \mbox{Mean}}{\mbox{SD}} 
+$$
+converges to a standard normal as $t\lambda \rightarrow \infty$
+\item Hence 
+$$
+\frac{(X - t\lambda)^2}{t\lambda} = \frac{(O - E)^2}{E} 
+$$
+converges to a Chi-squared with 1 degree of freedom for large $t\lambda$
+\item If $X \sim \mbox{Poisson}(t\lambda)$ then $X/t$ is the ML estimate
+  of $\lambda$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Proof}
+\begin{itemize}
+\item Likelihood is
+$$
+\frac{(t\lambda)^x e^{-t\lambda}}{x!}
+$$
+\item So that the log-likelihood is
+$$
+x\log(\lambda) - t\lambda + \mbox{constants in } \lambda
+$$
+\item The derivative of the log likelihood is
+$$
+x / \lambda - t
+$$
+\item Setting equal to $0$ we get that $\hat \lambda = x / t$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Pump failure data}
+\begin{itemize}
+\item Failures for Pump 1: $5$, monitoring time: $94.32$ days
+\item Estimate of $\lambda$, the mean number of failures per day $=5 / 94.32 = .053$
+\item Test the hypothesis that the mean number of failures per day is larger
+  than the industry standard, $.15$ events per day:
+  $H_0 :\lambda = .15$ versus $H_a : \lambda > .15$ 
+\item $TS = (5 - 94.32 \times .15) / \sqrt{94.2 \times .15} = -2.433$
+\item Hence P-value is very large $(.99)$
+\item HW: Obtain a confidence interval for $\lambda$ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Pump failure data}
+\begin{itemize}
+\item  Exact P-value can be obtained by using the Poisson distribution directly
+\item  $P(X \geq 5)$ where $X \sim \mbox{Poisson}(.15 \times 94.32)$
+\begin{verbatim}
+ppois(5, .15 * 94.32, lower.tail = FALSE) = .995
+\end{verbatim}
+very little evidence to suggest that this pump is malfunctioning
+\item To obtain a P-value for a two-sided alternative, double the
+  smaller of the two one sided P-values
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\ttfamily
+\begin{tabular}{llllll} 
+Pump           & 1      & 2     & 3     & 4      & 5     \\ \hline
+Failures       & 5      & 1     & 5     & 14     & 3     \\ 
+Time           & 94.32  & 15.72 & 62.88 & 125.76 & 5.24  \\ 
+$\hat \lambda$ & .053   & .064  & .080  & .111   & .573  \\ 
+P-value        & .995   & .999  & .908  & .843   & .009  \\ \\ \hline
+Pump           & 6      & 7     & 8     & 9      & 10    \\ \hline
+Failures       & 19     & 1     & 1     & 4      & 22    \\ 
+Time           & 31.44  & 1.05  & 1.05  & 2.10   & 10.48 \\ 
+$\hat \lambda$ & .604   & .952  & .952  & 1.904  & 2.099 \\ 
+P-value        & 1e-7   & .011  & .011  & 1e-5   & 2e-19 \\ \hline
+\end{tabular}
+\end{center}
+\normalfont  \normalsize
+\end{frame}
+
+\begin{frame}\frametitle{Common failure rate}
+\begin{itemize}
+\item If $X_i$ for $i=1,\ldots,n$ are Poisson$(t_i\lambda)$ then 
+  $$
+  \sum X_i \sim \mbox{Poisson}\left(\lambda\sum t_i \right)
+  $$
+  If you are willing to assume the common $\lambda$, then $\sum X_i$ contains
+  all of the relevant information
+\item Clearly a common $\lambda$ across pumps is not warranted. However, for illustration,
+  assume that this is the case
+\item Then the total number of failures was $75$
+\item The total monitoring time was $305.4$
+\item The estimate of the common $\lambda$ would be $75 / 305.4 = .246$
+\item Later we will discuss a test for common failure rate
+\end{itemize}
+\end{frame}
+
+\section{Person-time analysis}
+\begin{frame}\frametitle{Person-time analysis}
+\begin{center}
+  \ttfamily
+  \begin{tabular}{lccc}
+    OC        & \# of cases & ~~&\# of person-years \\ \hline
+Current users & 9         & & 2,935        \\
+Never   users & 239       & & 135,130      \\ \hline
+  \end{tabular}\\
+From: Rosner Fundamentals of Biostatistics, sixth edition, page 744
+\end{center}
+\begin{itemize}
+\item One of the most common uses of the Poisson distribution in 
+  epi is to model rates
+\item Estimated incidence rate amongst current users is $9/2,935 = .0038$
+  events per person year
+\item Estimated incidence rate amongst never users is $239 / 135,130 =
+  .0018$ events per person year
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Poisson model}
+\begin{itemize}
+\item Rates are often {\em modeled} as Poisson
+\item Notice that the total number of subjects is discarded, whether
+  the 2,935 years was comprised of 1,000 or 500 people does not come
+  into play
+\item Most useful for rare events (though we'll discuss another motivation for the
+  Poisson model later)
+  \begin{itemize}
+  \item $\lambda = .3$ events per year
+  \item Followed 10 people for a total of 40 person-years
+  \item Expected number of deaths is $.3\times 40 = 12$, larger than our sample
+  \end{itemize}
+\item $\lambda$ is assumed constant over time
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Comparing two Poisson means}
+\begin{itemize}
+\item Want to test $H_0 : \lambda_1 = \lambda_2 = \lambda$ 
+\item Observed counts $x_1$, $x_2$ Person-times $t_1$, $t_2$
+\item Estimate of $\lambda$ under the null hypothesis is 
+  $\hat \lambda = \frac{x_1 + x_2}{t_1 + t_2}$
+\item Estimated expected count in Group 1 under $H_0$
+  $$
+  E_1 = \hat \lambda t_1 = (x_1 + x_2) \frac{t_1}{t_1 + t_2} 
+  $$
+\item Estimated expected count in Group 2 under $H_0$
+  $$
+  E_2 = \hat \lambda t_2 = (x_1 + x_2) \frac{t_2}{t_1 + t_2} 
+  $$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Test statistic
+  $$
+  TS = \sum \frac{(O - E)^2}{E} =  \frac{(x_1 - E_1)^2}{E_1} + \frac{(x_2 - E_2)^2}{E_2}
+  $$
+follows a Chi-squared distribution with 1 df
+\item Equivalent computational form
+  $$
+  TS = \frac{(X_1 - E_1)^2}{V_1}
+  $$
+  where 
+  $$
+  V_1 = (x_1 + x_2)t_1 t_2 / (t_1 + t_2)^2
+  $$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{OC example}
+\begin{itemize}
+\item $x_1 = 9$, $t_1 = 2,935$
+\item $x_2 = 239$, $t_2 = 135,130$
+\item $E_1 = (9 + 239) \times \frac{2,935}{2,935 + 135,130} = 5.27$
+\item $V_1 = (9 + 239) \times \frac{2,935 \times 135,130}{(2,935 + 135,130)^2} = 5.16$
+$$
+TS = \frac{(9 - 5.27)^2}{5.16} = 2.70
+$$
+P-value = $.100$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Estimating the relative rate}
+\begin{itemize}
+\item Relative rate $\lambda_1 / \lambda_2$
+\item Estimate $(x_1 / t_1) / (x_2 / t_2)$
+\item Standard error for the {\bf log} relative rate estimate
+  $$
+\sqrt{  \frac{1}{x_1} + \frac{1}{x_2}}
+  $$
+\item For the OC example the estimated log relative rate
+  is $.550$
+\item The standard error is $\sqrt{\frac{1}{9} + \frac{1}{239}} = .340$
+\item 95\% CI for the log relative rate is
+  $$
+  .550 \pm 1.96 \times .340 = (-.115, 1.26)
+  $$
+\end{itemize}
+\end{frame}
+
+\section{Exact tests}
+\begin{frame}\frametitle{Exact test}
+  \begin{itemize}
+  \item HW: Extend the above test to more than two groups
+  \item Suppose that the observed counts were low
+  \item We obtain an exact test by conditioning on the sum of the counts
+  \item That is, we make use of the fact that
+    $$
+    X_1 ~|~ X_1 + X_2 = z ~\sim~\mbox{Binomial}\left(\frac{t_1}{t_1+t_2},z\right)
+    $$
+  \end{itemize}  
+\end{frame}
+
+\section{Time-to-event modeling}
+\begin{frame}\frametitle{Alternate motivation for Poisson model}
+\begin{itemize}
+\item Another way to motivate the Poisson model is to show that
+  it is {\em likelihood equivalent} to a plausible model
+\item We show that the Poisson model is likelihood equivalent to
+  a model that specifies failure times as being independent exponentials
+\item Whenever the independent exponential model is reasonable, then so
+  is the Poisson model, regardless of how large or small the rate or
+  sample size is
+\item The likelihood equivalence implies that likelihood methods apply
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Recall}
+\begin{itemize}
+\item The likelihood is the density viewed as a function of the parameter
+\item The likelihood summarizes the evidence in the data about the parameter
+\item If $X \sim \mbox{Poisson}(t\lambda)$ then 
+  the likelihood for $\lambda$ is 
+  $$
+  {\cal L}(\lambda) = \frac{(t\lambda)^x e^{-t\lambda}}{x!} \propto \lambda^x e^{-t\lambda}
+  $$
+\item When you have independent observations, the likelihood is the product
+  of the likelihood for each observation
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Likelihood equivalence with exponential model}
+\begin{itemize}
+\item Suppose there is no censoring (every person followed until an event)
+\item We model each person's time until failure as independent exponentials:
+$Y_i \sim \mbox{Exponential}(\lambda)$
+\item Each subject contributes $\lambda e^{-y_i \lambda}$ to the likelihood
+  $$
+  \prod_{i=1}^n \lambda e^{-y_i\lambda} = \lambda^n \exp\left(-\lambda\sum y_i\right)
+  $$
+\item Here $n$ is the number of events and $\sum y_i$ is the total person-time
+\item Same likelihood as if we specify $n \sim \mbox{Poisson}(\lambda \sum y_i)$!
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Likelihood equivalence with censoring}
+\begin{itemize}
+\item Suppose now that the study ended before events were observed on some subjects
+\item Likelihood contribution for each event is $\lambda e^{-y_i \lambda}$
+\item Likelihood contribution for each censored observation is 
+  $$
+  P(Y \geq y_i; \lambda) = \int_{y_i}^\infty \lambda e^{-u \lambda}du = e^{-y_i \lambda}
+  $$
+  The contribution is this integral b/c we don't really know the event time for that
+  person, only that it was later than $y_i$
+\end{itemize}
+\end{frame}
+ 
+\begin{frame}
+\begin{itemize}
+\item Combining the censored and non-censored observations, we have
+$$
+\left\{\prod_{\mathrm{non-censored} ~i}\lambda e^{-y_i \lambda}\right\}\times
+\left\{\prod_{\mathrm{censored} ~i} e^{-y_i \lambda}\right\}
+$$
+$x$ events (and hence $n - x$ censored observations)
+$$
+= \lambda^x \exp\left(-\lambda \sum_{i=1}^n y_i\right)
+$$
+\item $x$ is the total number of events and $\sum_{i=1}^n y_i$ is the total amount of
+  person-time
+\item This is exactly the same likelihood as modeling $X \sim \mbox{Poisson}(\lambda \sum_{i=1}^n y_i)$
+\end{itemize}
+\end{frame}
+
+\end{document}

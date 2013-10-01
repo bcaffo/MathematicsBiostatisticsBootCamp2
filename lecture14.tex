@@ -1,0 +1,217 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+
+\newcommand{\cpp}[1]{\texttt{#1}}
+
+ \title{Mathematical Biostatistics Boot Camp 2: Lecture }
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+\section{Multiplicity}
+\begin{frame}\frametitle{Multiplicity}
+\begin{itemize}
+\item After rejecting a $\chi^2$ omnibus 
+  test you do all pairwise comparisons
+\item You conducted a study with 20 outcomes and
+  30 different combinations of covariates. You 
+  consider significance at all combinations.
+\item You compare diseased tissue versus normal tissue
+  expression levels for 20$k$ genes
+\item You compare rest versus active at 300$k$ voxels
+  in an fMRI study
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Multiplicity}
+\begin{itemize}
+\item Performing two $\alpha$-level tests: \\
+  $H_0^1$ versus $H_a^1$ and $H_0^2$ versus $H_a^2$ \\
+  $E_1$ Reject $H_0^1$ and  $E_2$ Reject $H_0^2$
+  \begin{eqnarray*}
+FWE 
+&   & P(\mbox{one or more false rej} ~|~ H_0^1, H_0^2) \\
+& = & P(E_1 \cup E_2 ~|~ H_0^1, H_0^2) \\
+& = & P(E_1 ~|~ H_0^1, H_0^2) + P(E_2 ~|~ H_0^1, H_0^2) \\
+& - & P(E_1 \cap E_2 ~|~ H_0^1, H_0^2) \\
+& \leq & P(E_1 ~|~ H_0^1, H_0^2) + P(E_2 ~|~ H_0^1, H_0^2) \\
+& = & 2\times \alpha
+  \end{eqnarray*}
+\end{itemize}
+Result : The {\bf familywise error rate} for 
+$k$ hypotheses tested at level $\alpha$ is 
+bounded by $k\alpha$
+\end{frame}
+
+
+\begin{frame}\frametitle{Proof}
+$E_i$ - false rejection for test $i$ \\
+All probabilities are conditional on all of the nulls being true 
+\begin{eqnarray*}
+FWE 
+& =      & P(\mbox{one or more false rej}) \\
+& =      & P(\cup_{i=1}^k E_i) \\
+& =      & P\left\{E_1 \cup (\cup_{i=2}^k E_i)\right\} \\
+& \leq   & P(E_1) + P(\cup_{i=2}^k E_i)\\
+& \vdots & \\
+& \leq   & P(E_1) + P(E_2) +\hdots+P(E_k)\\
+& =      & k\alpha 
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}\frametitle{Other direction}
+\begin{itemize}
+\item The $FWE$ is no larger than $k\alpha$ where $k$ is the number of tests
+\item The $FWE$ is no smaller than $\alpha$ 
+$$
+P(\cup_{i=1}^k E_i) \geq P(E_1) = \alpha
+$$
+\item The lower bound is obtained when the $E_i$ are identical
+  $E_1 = E_2 = \ldots = E_k$ 
+\item {\bf Bonferoni's} tests each individual hypothesis at level $\alpha^* = \alpha / k$
+  
+  \begin{itemize}
+  \item The $FWE$ is no larger than $k \alpha^* = k \alpha / k = \alpha$
+  \item The $FWE$ is no smaller than $\alpha / k$
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{Bonferoni}
+\begin{frame}\frametitle{Bonferoni's procedure} 
+If $\alpha^*$ is small and the tests are independent, then the
+upper bound on the $FWE$ is nearly obtained 
+
+\begin{eqnarray*}
+ FWE & = & P(\mbox{one or more false rej}) \\
+     & = & 1 - P(\mbox{no false rej}) \\
+     & = & 1 - P(\cap_{i=1}^k \bar E_i) \\
+     & = & 1 - (1 - \alpha^*)^k \\
+     & \approx & 1 - (1 - k\alpha^*)\\
+     & = & k \alpha^* = \alpha
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}\frametitle{Scratch work} 
+Recall the approximation for $\alpha^*$ near 0
+$$
+\frac{f(\alpha^*) - f(0)}{\alpha^* - 0} \approx f'(0) 
+$$
+hence
+$$
+f(\alpha^*) \approx f(0) + \alpha^* f'(0)
+$$ \\
+In our case $f(\alpha^*) = (1 - \alpha^*)^k$ so $f(0) = 1$ \ \\ \ \\
+$f'(\alpha^*) = -k(1 - \alpha^*)^{k-1}$ so $f'(0) = -k$
+\ \\ \ \\
+Therefore $(1 - \alpha^*)^k \approx 1 - k \alpha^*$
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item For Bonferoni's procedure $\alpha^* = \alpha / k$ so will be close to 0 for 
+  a large number of tests
+\item When there are lots of tests that are (close to) independent, 
+  the upper bound on the $FWE$ used is appropriate
+\item When the test are closely related, then the $FWE$ will be closer to the lower
+  bound, and Bonferoni's procedure is conservative
+\item Is the familywise error rate always the most appropriate quantity to control for?
+\end{itemize}
+\end{frame}
+
+\section{FDR}
+\begin{frame}\frametitle{FDR}
+\begin{itemize}
+\item The {\bf false discovery rate} is the proportion of tests that are
+  falsely declared significant
+\item Controlling the FDR is less conservative than controlling the FWE rate
+\item Introduced by Benjamini and Hochberg
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Benjamini and Hochberg procedure}
+\begin{enumerate}
+\item Order your $k$ p-values, say $p_1 < p_2 < \ldots <p_k$
+\item Define $q_i = k p_i / i$
+\item Define $F_i = min(q_i,\ldots,q_k)$
+\item Reject for all $i$ so that $F_i$ is less than the desired FDR
+\end{enumerate}
+Note that the $F_i$ are increasing, so you only need to find the largest
+one so that $F_i < FDR$
+\end{frame} 
+
+\begin{frame}\frametitle{Example}
+1st 10 of 50 SNPs (Rosner page 581)\\
+\begin{center}
+\ttfamily
+\begin{tabular}{lllll}
+Gene & $i$ & $p_i$ & $q_i=kp_i/i$ & $F_i$ \\ \hline
+ 30 & 1 & $<$.0001 & .0035 & .0035 \\
+ 20 & 2 & .011     & .28   & .16   \\
+ 48 & 3 & .017     & .28   & .16   \\
+ 50 & 4 & .017     & .22   & .16   \\
+  4 & 5 & .018     & .18   & .16   \\
+ 40 & 6 & .019     & .16   & .16   \\
+  7 & 7 & .026     & .18   & .18   \\
+ 14 & 8 & .034     & .21   & .21   \\
+ 26 & 9 & .042     & .23   & .23   \\
+ 47 & 10& .048     & .24   & .24   \\ \hline
+\end{tabular}
+\normalfont
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{itemize}
+\item Bonferoni cutoff $.05 / 50 = .001$; only the first Gene is significant
+\item For a FDR of $0-15\%$; only the first Gene would be declared significant
+\item For a FDR of $16-20\%$, the first $7$ would be significant
+\end{itemize}
+\end{frame}
+
+
+\end{document}

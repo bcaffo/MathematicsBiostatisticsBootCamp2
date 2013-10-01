@@ -1,0 +1,274 @@
+\documentclass[aspectratio=169]{beamer}
+\mode<presentation>
+%\usetheme{Warsaw}
+%\usetheme{Goettingen}
+\usetheme{Hannover}
+%\useoutertheme{default}
+
+%\useoutertheme{infolines}
+\useoutertheme{sidebar}
+\usecolortheme{dolphin}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumerate}
+
+%some bold math symbosl
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\brho}{\boldsymbol{\rho}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bolde}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\cpp}[1]{\texttt{#1}}
+\newcommand{\logit}{\mathrm{logit}}
+
+\title{Mathematical Biostatistics Boot Camp 2: 
+Lecture 10, Case Control Data}
+\author{Brian Caffo}
+\date{\today}
+\institute[Department of Biostatistics]{
+  Department of Biostatistics \\
+  Johns Hopkins Bloomberg School of Public Health\\
+  Johns Hopkins University
+}
+
+
+\begin{document}
+\frame{\titlepage}
+
+%\section{Table of contents}
+\frame{
+  \frametitle{Table of contents}
+  \tableofcontents
+}
+
+
+\section{Case-control methods}
+\begin{frame}\frametitle{Case-control methods}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llll}
+& \multicolumn{2}{c}{Lung cancer} & \\ \cline{2-3}
+Smoker & Cases & Controls & Total \\ \hline
+Yes & 688 & 650 & 1338 \\
+No  & 21  & 59  &   80 \\ \hline
+    & 709 & 709 & 1418 
+  \end{tabular}
+\normalfont
+\end{center}
+\begin{itemize}
+\item Case status obtained from records 
+\item Cannot estimate $P(\mbox{Case} ~|~ \mbox{Smoker})$
+\item Can estimate $P(\mbox{Smoker} ~|~ \mbox{Case})$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Continued}
+\begin{itemize}
+\item Can estimate odds ratio b/c 
+\begin{eqnarray*}
+& &\frac{Odds(\mbox{case} ~|~ \mbox{smoker})}{Odds(\mbox{case} ~|~ \mbox{smoker}^c)} \\ \\
+& = & \frac{Odds(\mbox{smoker} ~|~ \mbox{case})}{Odds(\mbox{smoker} ~|~ \mbox{case}^c)}\\
+\end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Proof}
+$C$ - case, $S$ - smoker
+
+\begin{eqnarray*}
+& &\frac{Odds(\mbox{case} ~|~ \mbox{smoker})}{Odds(\mbox{case} ~|~ \mbox{smoker}^c)}\\ \\
+& = & \frac{P(C ~ | ~ S) / P(\bar{C} ~|~ S)}{P(C ~|~ \bar{S})/P(\bar{C} ~|~ \bar{S})} \\ \\
+& = & \frac{P(C, S) / P(\bar{C}, S)}{P(C, \bar{S})/P(\bar{C}, \bar{S})} \\ \\
+& = & \frac{P(C, S) P(\bar{C}, \bar{S})}{P(C,\bar{S}) P(\bar{C}, S)}
+\end{eqnarray*}
+Exchange $C$ and $S$ and the result is obtained
+\end{frame}
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item Sample $OR$ is $\frac{n_{11}n_{22}}{n_{12}n_{21}}$
+\item Sample $OR$ is unchanged if a row or column is multiplied by a constant
+\item Invariant to transposing
+\item Is related to $RR$ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notes continued}
+ \begin{eqnarray*}
+OR & = & \frac{P(S ~|~ C)/P(\bar{S} ~|~ C)}{P(S ~|~ \bar{C})/P(\bar{S} ~|~ \bar{C})} \\ \\
+   & = & \frac{P(C ~|~ S)/P(\bar{C} ~|~ S)}{P(C ~|~ \bar{S})/P(\bar{C} ~|~ \bar{S})} \\ \\
+   & = & \frac{P(C ~|~ S)}{P(C ~|~ \bar{S})}
+         \frac{P(\bar{C} ~|~ \bar{S})}{P(\bar{C} ~|~ S)} \\ \\
+   & = & RR \times \frac{1 - P(C ~|~ \bar{S})}{1 - P(C ~|~ S)}
+  \end{eqnarray*}
+\begin{itemize}
+\item $OR$ approximate $RR$ if $P(C ~|~ \bar{S})$ and $P(C ~|~ S)$ are small
+(or if they are nearly equal)
+\end{itemize}
+\end{frame}
+
+\section{Rare disease assumption}
+\begin{frame}\frametitle{Rare disease assumption}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llll}
+&\multicolumn{2}{c}{Disease} & \\ \cline{2-3}
+Exposure & Yes  & No & Total \\ \hline
+Yes      &   9  &    1 & 10   \\
+No       &   1  &  999 & 1000 \\ \hline
+         &  10  & 1000 & 1010 
+  \end{tabular}
+\normalfont
+\end{center}
+\begin{itemize}
+\item Cross-sectional data 
+\item $\hat{P(D)} = 10 / 1010 \approx .01$
+\item $\hat{OR} = (9 \times 999) / (1 \times 1) = 8991$
+\item $\hat{RR} = (9 / 10) / (1 / 1000) = 900$
+\item $D$ is rare in the sample
+\item $D$ is not rare among the exposed
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Notes}
+\begin{itemize}
+\item $OR = 1$ implies no association
+\item $OR > 1$ positive association
+\item $OR < 1$ negative association
+\item For retrospective CC studies, $OR$ 
+  can be interpreted prospectively
+\item For diseases that are rare among \\
+  the cases and controls, the $OR$ \\ approximates
+  the $RR$
+\item Delta method SE for log $OR$ is
+$$
+\sqrt{\frac{1}{n_{11}} + \frac{1}{n_{12}} + \frac{1}{n_{21}} + \frac{1}{n_{22}}}
+$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llll}
+& \multicolumn{2}{c}{Lung cancer} & \\ \cline{2-3}
+Smoker & Cases & Controls & Total \\ \hline
+Yes & 688 & 650 & 1338 \\
+No  & 21  & 59  &   80 \\ \hline
+    & 709 & 709 & 1418 
+  \end{tabular}
+\normalfont
+\end{center}
+~\footnote{Data from Agresti, Categorical Data Analysis, second edition}
+\begin{itemize}
+\item $\hat{OR} = \frac{688 \times 59}{21 \times 650} = 3.0$
+\item $\hat{SE}_{\log \hat{OR}} = \sqrt{\frac{1}{688} + \frac{1}{650} + \frac{1}{21} + \frac{1}{59}} = .26$
+\item $CI = \log(3.0) \pm 1.96 \times .26 = [.59, 1.61]$
+\item The estimated odds of lung cancer for smokers are $3$ times
+  that of the odds for non-smokers with an interval of 
+  $[\exp(.59), \exp(1.61)] = [1.80, 5.00]$
+\end{itemize}
+\end{frame}
+
+\section{Exact inference for the odds ratio}
+\begin{frame}\frametitle{Exact inference for the OR}
+\begin{center}
+\ttfamily
+  \begin{tabular}{llll}
+& \multicolumn{2}{c}{Lung cancer} & \\ \cline{2-3}
+Smoker & Cases & Controls & Total \\ \hline
+Yes & 688 & 650 & 1338 \\
+No  & 21  & 59  &   80 \\ \hline
+    & 709 & 709 & 1418 
+  \end{tabular}
+\normalfont
+\end{center}\ \\
+\begin{itemize}
+\item $X$ the number of smokers for the cases 
+\item $Y$ the number of smokers for the controls
+\item Calculate an exact CI for the odds ratio
+\item Have to eliminate a nuisance parameter
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notation}
+\begin{itemize}
+\item $\logit(p) = \log\{p / (1 - p)\}$ is the {\bf log-odds}
+\item Differences in $\logit s$ are log-odds {\em ratios}
+\item $\logit\{P(\mbox{Smoker} ~|~ \mbox{Case})\} = \delta$
+  \begin{itemize}
+  \item   $P(\mbox{Smoker} ~|~ \mbox{Case}) = e^\delta /(1 + e^\delta)$ 
+  \end{itemize}
+\item $\logit\{P(\mbox{Smoker} ~|~ \mbox{Control})\} = \delta + \theta$
+  \begin{itemize}
+  \item  $P(\mbox{Smoker} ~|~ \mbox{Control}) = e^{\delta + \theta} / (1 + e^{\delta+\theta})$   \end{itemize}
+\item $\theta$ is the log-odds ratio
+\item $\delta$ is the nuisance parameter
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Notation}
+\begin{itemize}
+\item $X$ is binomial with $n_1$ trials and success probability $e^\delta /(1 + e^\delta)$
+\item $Y$ is binomial with $n_2$ trials and success probability $e^{\delta + \theta} / (1 + e^{\delta+\theta})$
+\end{itemize}
+\begin{eqnarray*}
+P(X = x) & = &
+\left(\begin{array}{c} n_1 \\ x \end{array}\right)\left\{\frac{e^\delta}{1 + e^\delta}\right\}^x
+\left\{\frac{1}{1 + e^\delta}\right\}^{n_1-x} \\
+& = & \left(\begin{array}{c} n_1 \\ x \end{array}\right)e^{x\delta}
+\left\{\frac{1}{1 + e^\delta}\right\}^{n_1}
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}
+$$
+P(X = x) = \left(\begin{array}{c} n_1 \\ x \end{array}\right)e^{x\delta}
+\left\{\frac{1}{1 + e^\delta}\right\}^{n_1}
+$$ \ \\
+$$
+P(Y = z-x) =  \left(\begin{array}{c} n_2 \\ z-x \end{array}\right)e^{(z-x)\delta + (z-x)\theta}
+\left\{\frac{1}{1 + e^{\delta+\theta}}\right\}^{n_2}
+$$\ \\ 
+$$
+P(X+Y = z) = \sum_u P(X = u)P(Y = z - u)
+$$ \ \\
+$$
+P(X = x ~|~ X+Y = z) = \frac{P(X = x)P(Y = z - x)}{\sum_u P(X = u) P(Y = z-u)}
+$$
+\end{frame}
+
+\begin{frame}\frametitle{Non-central hypergeometric distribution}
+$$
+P(X = x ~|~ X+Y = z; \theta)
+= \frac{
+\left(\begin{array}{c} n_1 \\ x \end{array}\right)
+\left(\begin{array}{c} n_2 \\ z-x \end{array}\right) e^{x\theta}
+}{
+\sum_u 
+\left(\begin{array}{c} n_1 \\ u \end{array}\right)
+\left(\begin{array}{c} n_2 \\ z-u \end{array}\right) e^{u\theta}
+}
+$$
+\begin{itemize}
+\item $\theta$ is the log odds ratio 
+\item This distribution is used to calculate exact hypothesis tests for
+  $H_0:\theta = \theta_0$
+\item Inverting exact tests yields exact confidence intervals for the odds
+  ratio
+\item Simplifies to the hypergeometric distribution for $\theta = 0$
+\end{itemize} 
+\end{frame}
+
+\end{document}
