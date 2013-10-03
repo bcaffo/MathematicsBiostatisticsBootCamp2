@@ -76,7 +76,7 @@ $Y$ & $77$  & $43$ & $120$ \\   \hline
 \end{tabular}
 \end{center}
 \begin{itemize}
-\item $p_1$ and $p_2$ are the cure rates
+\item $p_1$ and $p_2$ are the rates of side effects.
 \item $H_0:p_1 = p_2$
 \end{itemize}
 \end{frame}
@@ -114,7 +114,7 @@ chisq.test(dat, correct = FALSE)
 \begin{tabular}{|c|c|c|}\hline
 $n_{11} = x$ & $n_{12} = n_1 - x$ & $n_1 = n_{1+}$ \\ \hline
 $n_{21} = y$ & $n_{22} = n_2 - y$ & $n_2 = n_{2+}$ \\ \hline
-$n_{+1}$     & $n_{+2}$           &       \\ \hline 
+$n_{+1}$     & $n_{+2}$           &   $n$    \\ \hline 
 \end{tabular}
 \end{center}
 \end{frame}
@@ -177,9 +177,9 @@ Total       & $50$   & $350$ & $400$ \\   \hline
 
 \begin{frame}\frametitle{Continued}
 \begin{itemize}
-\item Under $H_0$ (est) $P\left(\mbox{MA}<20\right) = \frac{100}{400} = .25$
-\item Under $H_0$ (est) $P\left(\mbox{BW}<2500\right) = \frac{50}{400} = .125$
-\item Under $H_0$ (est) 
+\item Estimated marginal probability of younger maternal age $P\left(\mbox{MA}<20\right) = \frac{100}{400} = .25$
+\item Estimated marginal probability of low birth weight $P\left(\mbox{BW}<2500\right) = \frac{50}{400} = .125$
+\item Under $H_0$ estimated cell probability of younger and low birth weight 
   $$P\left(\mbox{MA}<20\mbox{ and BW}<2,500 \right) = .25 \times .125$$
 \item Therefore
   \begin{itemize}
@@ -422,11 +422,9 @@ Expected         & 6017.25 & 2005.75 & 8023\\ \hline
 \item Test statistic is $\sum \frac{(0-E)^2}{E}$
 \item TS follows $\chi^2$ distribution for large $n$
 \item $df$ is the number of cells minus 1
-\item Undirected alternative is problematic
 \item Especially useful for testing RNGs
 \item Kolmogorov/Smirnov test is an  alternative 
-  test that does not require  discretization but often
-  has low power
+  test that does not require  discretization 
 \end{itemize}
 \end{frame}
 
