@@ -1,0 +1,751 @@
+\documentclass[12pt]{article}
+\usepackage{geometry,amsmath,amssymb, graphicx, natbib, float, enumerate}
+\geometry{margin=1in}
+%\renewcommand{\familydefault}{cmss}
+\usepackage{charter}
+\restylefloat{table}
+\restylefloat{figure}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\logit}{\mathrm{logit}}
+\newcommand{\RQ}{[{\bf REQUIRED}]~}
+
+\begin{document}
+\section*{On these review notes}
+\begin{enumerate}[1.]
+\item You are responsible for the correctness of all of the formulae
+  on this review sheet. (There are undoubtedly ytopgraphical errors :-).
+\end{enumerate}
+
+\newpage
+% {\bf Formula sheet for the exam}\\
+% Here is a list of the formulae that you will be given on the exam.
+% Again, {\em you} are responsible for the correctness of these
+% formulae.
+% \begin{enumerate}[1.]
+% \item $P(A | B) = P(A \cap B) / P(B)$
+% \item Bayes rule:$P(A | B) = \frac{P(B | A) P(A)}{P(B | A) P(A) + P(B | A^c) P(A^c)}.$
+% \item $E[X] = \sum X p(x)$ discrete $E[X] = \int x f(x) dx$ continuous.
+% \item $\mathrm{Var}(X) = E[(X - \mu)^2] = E[X^2] - E[X]^2$.
+% \item $P(X = k) = \left(\begin{array}{c} n \\ k \end{array}\right) p^k(1 - p)^{n - k}.$
+% \item $(2 \pi \sigma^2)^{-1/2}\exp\{-(x - \mu)^2 / 2 \sigma^2\}$.
+% \item $S^2 = \sum (X_i - \bar X)^2 / (N - 1)$.
+% \item $N = (Z_{1-\alpha} + Z_{1 - \beta})^2\sigma^2 / \delta^2$.
+% \item $\bar X \pm t_{n-1,1-\alpha/2} \frac{S}{\sqrt{n}}$.
+% \item $\frac{\bar{X} - \mu_0}{S / \sqrt{n}}$.
+% \item $\frac{\hat p - p}{\sqrt{p_0 (1 - p_0) / n}}$.
+% \item $\hat p \pm Z_{1 - \alpha / 2} \sqrt{\hat p (1 - \hat p) / n}$.
+% \item $\frac{\hat p - p_0}{\sqrt{p_0 (1 - p_0) / n}}$,
+%   $\frac{\hat p - p_0}{\sqrt{\hat p (1 - \hat p) / n}}$.
+% \item $\hat p \left(\frac{n}{n + Z_{1 - \alpha / 2}^2}\right) + 
+%   \frac{1}{2} \left(\frac{Z_{1 - \alpha / 2}^2}{n + Z_{1 - \alpha / 2}^2}\right)
+%  \pm Z_{1 - \alpha/2}\sqrt{\frac{1}{n + Z_{1 - \alpha / 2}^2} 
+%   \left[\hat p (1 - \hat p) \left(\frac{n}{n + Z_{1 - \alpha / 2}^2}\right) +
+%     \frac{1}{4} \left(\frac{Z_{1 - \alpha / 2}^2}{n + Z_{1 - \alpha / 2}^2}\right)
+%   \right]}.$
+% \item $\frac{\bar X - \bar Y}{S_p \sqrt{\frac{1}{n_x} + \frac{1}{n_y}}}$.
+% \item $\frac{\bar X - \bar Y}{\sqrt{\frac{S_x^2}{n_x} + \frac{S_y^2}{n_y}}}$.
+% \item $F = \frac{S_1^2}{S_2^2}$.
+% \item   $P\left(Z \geq \frac{\mu_0 - \mu_1}{\sigma / \sqrt{n}} + Z_{1 - \alpha} \right)$,
+%   $P\left(Z \leq  \frac{\mu_0 - \mu_1}{\sigma / \sqrt{n}} - Z_{1 - \alpha} \right)$.
+% \item $S_p^2 = \frac{(n_x - 1) S_x^2 + (n_y - 1) S_y^2}{n_x + n_y -
+%     2}$
+% \end{enumerate}
+
+\newpage
+
+\section{Set theory}
+\begin{enumerate}[1.]
+\item Notation - $\subset$ means ``is a subset of'', $\in$ means ``is an element of''.
+\item The {\bf sample space}, $\Omega$, is the space of all possible outcomes of an experiment.
+\item An {\bf event}, say $A \subset \Omega$, is  subset of $\Omega$.
+\item The {\bf union} of two events, $A \cup B$, is the collection of elements that are in $A$, $B$ or both.
+\item The {\bf intersection} of two events, $A \cap B$,  is the collection of elements that are in both $A$ and $B$.
+\item The {\bf compliment} of an event, say $\bar A$ or $A^c$, is all of the elements of $\Omega$ that are not in $A$.
+\item The {\bf null} or {\bf empty} set is denoted $\emptyset$.
+\item Two sets are {\bf disjoint} or {\bf mutually exclusive} 
+  if their intersection is empty, $A\cap B = \emptyset$.
+\item {\bf DeMorgan's laws} state that $(A\cup B)^c = A^c \cap B^c$ and
+  $(A\cap B)^c = A^c \cup B^c$.
+\end{enumerate}
+
+\section{Probability basics}
+\begin{enumerate}[1.]
+  \item A {\bf probability measure}, say $P$, is a function on the
+    collection of events to $[0,1]$ so that:
+    \begin{enumerate}[a.]
+    \item $P(\Omega) = 1$.
+    \item If $A\subset \Omega$ then $P(A) \geq 0$.
+    \item If $A_1,\ldots, A_n$ are disjoint then ({\bf finite additivity})
+      $
+      P(\cup_{i=1}^n A_i) = \sum_{i=1}^n P(A_i).
+      $
+    \end{enumerate}
+  \item $P(\bar A) = 1 - P(A)$.
+  \item The {\bf odds} of an event, $A$, are $P(A) / (1 - P(A)) = P(A) / P(\bar A)$.
+  \item $P(A \cup B) = P(A) + P(B) - P(A\cap B)$.
+  \item If $A \subset B$ then $P(A) \leq P(B)$.
+  \item Two events $A$ and $B$ are {\bf independent} if $P(A\cap B) = P(A) P(B)$. A collection of 
+    events, $A_i$, are {\bf mutually independent} if $P(\cap_{i=1}^n A_i) = \prod_{i=1}^n P(A_i)$.
+  \item Pairwise independence of a collection of events does not imply
+    mutually independence, though the reverse is true.
+  \item Given that $P(B) > 0$, the conditional probability of $A$ given that $B$ has occurred is
+    $P(A | B) = P(A \cap B) / P(B)$.
+  \item Two events $A$ and $B$ are {\bf independent} if $P(A | B) = P(A)$.
+  \item The {\bf law of total probability} states that if $A_i$ are a
+    collection of {\em mutually exclusive events} so that $\Omega = \cup_{i=1}^n A_i$,
+    then $P(C) = \sum_{i=1}^n P(C | A_i)P(A_i)$ for any event $C$.
+  \item {\bf Baye's rule} states that if $A_i$ are a collection of
+    {\em mutually exclusive events} so that $\Omega = \cup_{i=1}^n
+    A_i$, then
+    $$
+    P(A_j | C) = \frac{P(C | A_j) P(A_j)}{\sum_{i=1}^n P(C|A_i)P(A_i)}.
+    $$
+    for any set $C$ (with positive probability). Notice $A$ and
+    $\bar A$ are disjoint and $A\cup A^c = \Omega$ so that we have
+    $$
+    P(A | B) = \frac{P(B | A) P(A)}{P(B | A) P(A) + P(B | A^c) P(A^c)}.
+    $$
+    \item The {\bf sensitivity} of a diagnostic test is defined to
+    be $P(+ | D)$ where $+$ ($-$) is the event of a positive
+    (negative) test result and $D$ is the event that a subject has the
+    disease in question. The {\bf specificity} of a diagnostic test is
+    $P(- | \bar D)$.
+    \item Baye's rule yields that
+      $$
+      P(D | + ) = \frac{P(+ | D) P(D)}{P(+ | D) P(D) + P(+ | D^c) P(D^c)},
+      $$
+      and 
+      $$
+      P(D^c | -) = \frac{P(- | D^c) P(D^c)}{P(- | D^c) P(D^c) + P(- | D) P(D)}.
+      $$
+    \item The {\bf likelihood ratio} of a positive test result is
+      $P(+ | D) / P(+ | \bar D) = \mbox{sensitivity} / (1 - \mbox{specificity})$.
+      The likelihood ratio of a negative test result is
+      $P(- | \bar D) / P(- | D) = \mbox{specificity} / (1 - \mbox{sensitivity})$.
+    \item The odds of disease after a positive test are related to the odds of disease
+      before the test by the relation
+      $$
+      \frac{P(D | +)}{P(D^c | +)} = \frac{P(+ | D)}{P(+ | D^c)} \frac{P(D)}{P(D^c)}.
+      $$
+      That is, the posterior odds equal the prior odds times the likelihood ratio.
+      Correspondingly,
+      $$
+      \frac{P(D^c | -)}{P(D | -)} = \frac{P(- | D^c)}{P(- | D)} \frac{P(D^c)}{P(D)}.
+      $$
+      This yields a method for evaluating the results of a diagnostic test without
+      knowledge of the disease prevalence.
+  \end{enumerate}
+  \section{Random variables}
+  \begin{enumerate}[1.]
+  \item A {\bf random variable} is a function from $\Omega$ to the real numbers.
+    A random variable is a random number that is the result of an experiment
+    governed by a probability distribution.
+  \item A {\bf Bernoulli}  random
+    variable is one that takes the value 1 with probability $p$ and 0
+    with probability $(1 - p)$. That is, $P(X = 1) = p$ and $P(X = 0) =
+    1 - p$.
+  \item A {\bf probability mass function} (pmf) is a function that yields the various
+    probabilities associated with a random variable. For example, the probability
+    mass function for a Bernoulli random variable is $f(x) = p^x(1 - p)^{1 - x}$ for $x = 0, 1$
+    as this yields $p$ when $x = 1$ and $(1 - p)$ when $x = 0$.
+  \item The {\bf expected value} or (population) {\bf mean} 
+    of a discrete random variable, $X$, with pmf $f(x)$ is
+    $$
+    \mu = E[X] = \sum_{x} x f(x).
+    $$
+    The mean of a Bernoulli variable is then $1 f(1) + 0 f(0) = p$.
+  \item The {\bf variance} of any random variable, $X$, (discrete or continuous) is
+    $$
+    \sigma^2 = E\left[(X - \mu)^2\right] = E[X^2] - E[X]^2.
+    $$
+    The latter formula being the most convenient for computation. The variance of 
+    a Bernoulli random variable is $p(1-p)$.
+  \item The (population) {\bf standard deviation}, $\sigma$, is the
+    square root of the variance.
+  \item {\bf Chebyshev's inequality} states that for any random variable
+    $P(|X - \mu| \geq K\sigma) \leq 1 / K ^ 2$.  This yields a way to
+    interpret standard deviations. 
+  \item A {\bf Binomial} random variable, $X$, is obtained as the sum of $n$ Bernoulli
+    random variables and has pmf
+    $$
+    P(X = k) = \left(\begin{array}{c} n \\ k \end{array}\right) p^k(1 - p)^{n - k}.
+    $$
+    Binomial random variables have expected value $np$ and variance $np(1-p)$.
+\end{enumerate}
+
+\section{Continuous random variables}
+\begin{enumerate}[1.]
+\item {\bf Continuous} random variables take values on a continuum. 
+\item The probability that a continuous random variable takes on any specific
+  value is 0.
+\item Probabilities associated with continuous random variables are governed by
+  {\bf probability density functions} (pdfs). Areas under probability density
+  functions correspond to probabilities. For example, if $f$ is a pdf corresponding
+  to random variable $X$, then
+  $$
+  P(a \leq X \leq b) = \int_a^b f(x)dx.
+  $$
+  To be a pdf, a function must be positive and integrate to 1. 
+  That is, $\int_{-\infty}^{\infty} f(x)dx = 1$
+\item If $h$ is a positive function such that $\int_{-\infty}^{\infty}
+  h(x)dx \leq \infty$ then $f(x) = h(x) / \int_{-\infty}^{\infty}
+  h(x)dx$ is a valid density. Therefore, if we only know a density up to a constant
+  of proportionality, then we can figure out the exact density.
+\item The expected value, or mean, of a continuous random variable,
+  $X$, with pdf $f$, is
+  $$
+  \mu = E[X] = \int_{-\infty}^{\infty} t f(t) dt.
+  $$
+\item The variance is $\sigma^2 = E[(X - \mu)^2] = E[X^2]-E[X]^2$.
+\item The {\bf distribution function}, say $F$, corresponding to a random variable $X$ with
+  pdf, $f$, is 
+  $$
+  P(X \leq x) = F(x) = \int_{-\infty}^x f(t)dt.
+  $$
+  (Note the common convention that $X$ is used when describing an unobserved random variable
+  while $x$ is for specific values.)
+\item The $p^{th}$ {\bf quantile} (for $0\leq p \leq 1$), say $X_p$,
+  of a distribution function, say $F$, is the point so that $F(X_p) =
+  p$. For example, the $.025^{th}$ quantile of the standard normal
+  distribution is -1.96.
+\end{enumerate}
+
+\section{Properties of expected values and variances}
+The following properties hold for all expected values (discrete or continuous)
+\begin{enumerate}[1.]
+\item Expected values commute across sums: $E[X + Y] = E[X] + E[Y]$.
+\item Multiplicative and additive constants can be pulled out 
+  of expected values $E[cX] = cE[X]$ and $E[c + X] = c + E[X]$.
+\item For independent random variables, $X$ and $Y$, $E[XY] = E[X]E[Y]$.
+\item In general, $E[h(X)] \neq h(E[X])$.
+\item Variances commute across sums {\em for independent variables}
+  $\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y)$.
+\item Multiplicative constants are squared when pulled out of variances
+$\mathrm{Var}(cX) = c^2 \mathrm{Var}(X)$.
+\item Additive constants do not change variances: $\mathrm{Var}(c + X)
+  = \mathrm{Var}(X)$.
+\end{enumerate}
+
+\section{The normal distribution}
+\begin{enumerate}[a.]
+\item The {\bf Bell curve} or {\bf normal} or {\bf Gaussian} density is the 
+  most common density. It is specified by its mean, $\mu$, and variance, $\sigma^2$.
+  The density is given by $f(x) = (2 \pi \sigma^2)^{-1/2}\exp\{-(x - \mu)^2 / 2 \sigma^2\}$.
+  We write $X\sim \mathrm{N}(\mu, \sigma^2)$ to denote that $X$ is normally distributed
+  with mean $\mu$ and variance $\sigma^2$.
+\item The {\bf standard normal} density, labeled $\phi$, corresponds to a normal density
+  with mean $\mu = 0$ and variance $\sigma^2 = 1$.
+  $$
+  \phi(z) = (2 \pi)^{-1/2}\exp\{-z^2 / 2\}.
+  $$
+  The standard normal distribution function is usually labeled $\Phi$.
+\item If $f$ is the pdf for a $\mathrm{N}(\mu,\sigma^2)$ random variable, $X$,
+  then note that $f(x) = \phi\{(x - \mu) / \sigma\} / \sigma$. 
+  Correspondingly, if $F$ is the associated distribution
+  function for $X$, then $F(x) = \Phi\{(x - \mu) / \sigma\}$.
+\item If $X$ is normally distributed with mean $\mu$ and variance
+  $\sigma^2$ then the random variable $Z = (X - \mu) / \sigma$ is standard normally
+  distributed. Taking a random variable subtracting its mean and
+  dividing by its standard deviation is called ``standardizing'' a
+  random variable. 
+\item If $Z$ is standard normal then $X = \mu + Z \sigma$ is normal with mean
+  $\mu$ and variance $\sigma^2$.
+\item 68\%, 95\% and 99\% of the mass of any normal distribution lies
+  within 1, 2 and 3 (respectively) standard deviations from the mean.
+\item $Z_\alpha$ refers to the $\alpha^{th}$ quantile of the standard normal
+  distribution. $Z_{.90}$, $Z_{.95}$, $Z_{.975}$ and $Z_{.99}$ are
+  1.28, 1.645, 1.96 and 2.32.
+\item Sums and means of normal random variables are normal (regardless of whether or not
+  they are independent). You can use the rules for expectations and variances to
+  figure out $\mu$ and $\sigma$.
+\item The sample standard deviation of iid normal random variables, appropriated
+  normalized, is a Chi-squared random variable (see below).
+\end{enumerate}
+
+\section{Sample means and variances}
+Throughout this section let $X_i$ be a collection of iid random
+variables with mean $\mu$ and variance $\sigma^2$.
+\begin{enumerate}[1.]
+\item We say random variables are {\bf iid} if they are independent and 
+  identically distributed. 
+\item For random variables, $X_i$, the {\bf sample mean} is $\bar X = \sum_{i=1}^nX_i / n$.
+\item $E[\bar X] = \mu = E[X_i]$ (does not require the independence or constant variance).
+\item If the $X_i$ are iid with variance $\sigma^2$ then
+  $\mathrm{Var}(\bar X) = \mathrm{Var}(X_i) / n = \sigma^2 / n$. 
+\item The {\bf sample variance} is defined to be
+  $$
+  S^2 = \frac{\sum_{i=1}^n (X_i - \bar X)^2}{n - 1}.
+  $$
+\item $\sum_{i=1}^n (X_i - \bar X)^2 = \sum_{i=1}^n X_i^2 - n\bar X^2$ is a shortcut
+  formula for the numerator.
+\item $\sigma / {\sqrt n}$ is called the {\bf standard error} of $\bar X$. The estimated
+  standard error of $\bar X$ is $S / \sqrt{n}$. Do not confuse dividing by this $\sqrt n$
+  with dividing by $n-1$ in the calculation of $S^2$.
+\item An estimator is {\bf unbiased} if its expected value equals the parameter
+  it is estimating.
+\item $E[S^2] = \sigma^2$, which is why we divide by $n-1$ instead of
+  $n$. That is, $S^2$ is unbiased. However, dividing by $n-1$
+  rather than $n$ does increase the variance of this estimator
+  slightly, $\mathrm{Var}(S^2) \geq \mathrm{Var}((n-1)S^2 / n)$.
+\item If the $X_i$ are normally distributed with mean $\mu$ and variance $\sigma^2$, 
+  then $\bar X$ is normally distributed with mean $\mu$ and variance $\sigma^2 / n$.
+\item The {\bf Central Limit Theorem}. If the $X_i$ are iid with
+  mean $\mu$ and (finite) variance $\sigma^2$ then
+  $$
+  Z = \frac{\bar X - \mu}{\sigma / \sqrt n}
+  $$
+  will limit to a standard normal distribution. The result is true for small sample sizes,
+  if the $X_i$ iid normally distributed.
+\item If we replace $\sigma$ with $S$; that is,
+  $$
+  Z = \frac{\bar X - \mu}{S / \sqrt n},
+  $$
+  then $Z$ still limits to a standard normal. If the $X_i$ are iid normally distributed,
+  then $Z$ follows the Students $T$ distribution for small $n$.
+\end{enumerate}
+
+\section{Confidence intervals for a mean using the CLT.}
+\begin{enumerate}[1.]
+\item Using the CLT, we know that 
+$$
+P\left(-Z_{1 - \alpha / 2} \leq \frac{\bar X - \mu}{S / \sqrt n} \leq Z_{1 - \alpha / 2}\right)
+ = 1 - \alpha
+$$
+for large $n$. Solving the inequalities for $\mu$, we calculated that in repeated
+sampling, the interval
+$$
+\bar X \pm Z_{1 - \alpha / 2} \frac{S}{\sqrt{n}}
+$$
+will contain $\mu$ 100$(1-\alpha)$\% of the time.
+\item The probability that $\mu$ is in an observed confidence interval is either 1 or 0. 
+  The correct interpretation is that in repeated sampling, the interval we obtain
+  will contain $\mu$ 100$(1 - \alpha)\%$ of the time. (Assumes that the CLT has kicked in).
+\item As $n$ increases, the interval gets narrower.
+\item As $S$ increases, the interval gets wider.
+\item As the {\bf confidence level}, $(1-\alpha)$, increases, the interval gets wider.
+\item Fixing the confidence level controls the {\bf accuracy} of the
+  interval. A 95\% interval has 95\% coverage regardless of the sample
+  size. (Again, assuming that the CLT has kicked in.) Increasing $n$
+  will improve the precision (width) of the interval.
+\item Prior to conducting a study, you can fix the {\bf margin of
+    error} (half width), say $\delta$, of the interval by setting $n =
+  (Z_{1 - \alpha / 2} \sigma / \delta)^2$. Round up. Requires an estimate of $\sigma$.
+\end{enumerate}
+
+\section{Confidence intervals for a variance and T confidence intervals}
+\begin{enumerate}[1.]
+\item If $X_i$ are iid normal random variables with mean $\mu$ and variance
+  $\sigma^2$ then  $\frac{(n - 1)S^2}{\sigma^2}$
+  follows what is called a Chi-squared distribution with $n-1$ degrees of freedom.
+\item Using the previous item, we know that
+  $$
+  P\left(\chi^2_{n-1,\alpha/2} \leq \frac{(n-1)S^2}{\sigma^2} \leq \chi^2_{n-1,1-\alpha/2}
+  \right) = 1 - \alpha,
+  $$
+  where $\chi^2_{n-1,\alpha}$ denotes the $\alpha^{th}$ quantile of the Chi-squared 
+  distribution. Solving these inequalities for $\sigma^2$ yields
+  $$
+  \left[\frac{(n-1)S^2}{ \chi^2_{n-1,1-\alpha/2}},\frac{(n-1)S^2}{\chi^2_{n-1,\alpha/2}}\right]
+  $$
+  is a 100$(1 - \alpha)$\% confidence interval for $\sigma^2$. Recall this assumes that 
+  the $X_i$ are iid Gaussian random variables.
+\item The fact that $(n - 1) S^2 \sim \mbox{Gamma}((n - 1) / 2, 2\sigma^2)$ can 
+  be used to create a likelihood interval for $\sigma$ or $\sigma^2$.
+\item Chi-squared tests, intervals and likelihood intervals for
+  variances are not robust to the normality assumption.
+\item If $Z$ is standard normal and $X$ is and independent Chi-squared
+  with $df$ degrees of freedom then $\frac{Z}{\sqrt{X / df}}$ follows
+  what is called a Student's $T$ distribution with $df$ degrees of freedom.
+\item The Student's $T$ density looks like a normal density with heavier
+  tails (so it looks more squashed down).
+\item By the previous item, if the $X_i$ are iid $\mathrm{N}(\mu,\sigma^2)$ then
+  $$
+  Z = \frac{\bar X - \mu}{S / \sqrt n}
+  $$
+  follows a Student's $T$ distribution with $(n-1)$ degrees of freedom. Therefore
+  if $t_{n-1,\alpha}$ is the $\alpha^{th}$ quantile of the Student's $T$ distribution
+  then 
+  $$
+  \bar X \pm t_{n-1,1-\alpha/2} \frac{S}{\sqrt{n}}
+  $$
+  is a 100$(1 - \alpha)$\% confidence interval for $\mu$.
+\item The Student's $T$ confidence interval assumes normality of the
+  $X_i$. However, the $T$ distribution has quite heavy tails and so the
+  interval is conservative and works well in many situations.
+\item For large sample sizes, the Student's $T$ and CLT based intervals are
+  nearly the same because the Student's $T$ quantiles become more and more
+  like standard normal quantiles as $n$ increases.
+\item For small sample sizes, it is difficult to diagnose normality/lack of normality.
+  Regardless, the robust T interval should be your default option.
+\item The fact that $\sqrt{n} \bar X / S $ is non-central $T$ with 
+  $n-1$ degrees of freedom and non-centrality parameter $\sqrt{n}\mu/\sigma$ can be
+  used to create a likelihood interval for the effect size $\mu / \sigma$.
+\item Assuming the underlying normality of the data, 
+  the profile likelihood for $\mu$ is $\left(\sum (x_i - \mu)^2\right)^{-n/2}$.
+\end{enumerate}
+
+\section{EDA}
+\begin{enumerate}[1.]
+\item The $p^{th}$ {\bf empirical quantile} of a data set is that
+  point so that $100p\%$ of the data lies below it. The sample {\bf
+    median} is the $.50^{th}$ quantile. Empirical quantiles estimate
+  population quantiles.
+\item A {\bf boxplot} plots a box with a centerline at the sample median
+  and the box edges at the lower and upper quartiles. ``Whiskers'' extend
+  to the largest data point that is within 1.5 of the IQR (inter quartile range). Side
+  by side boxplots are useful to compare groups.
+\item A {\bf quantile-quantile} (qq) plot, plots empirical quantiles
+  versus the theoretical quantiles. For normal random variables with
+  mean $\mu$ and variance $\sigma^2$, let $X_p$ be the $p^{th}$ 
+  quantile. Then, $X_p = \mu + Z_p \sigma$. Therefore plotting the empirical
+  quantiles versus the standard normal quantiles can be used to diagnose
+  non-normality (a {\bf normal qq} plot). Any deviation from a straight line
+  indicates non-normality.
+\item {\bf Kernel density estimates}, {\bf histograms} and {\bf stem and leaf}
+  plots show estimates of the density. Each relies on tuning parameters that 
+  you should vary. KDEs and histograms should only be used if you have enough
+  data.
+\end{enumerate}
+
+\section{The bootstrap}
+\begin{enumerate}[1.]
+\item The (non-parametric) {\bf bootstrap} can be used to calculate
+  {\bf percentile bootstrap confidence intervals}.
+\item The {\bf bootstrap principle} is to use the empirical distribution
+  defined by the data to obtain an estimate of the sampling distribution
+  of a statistic. In practice the bootstrap principle is always executed
+  by {\bf resampling} from the observed data.
+\item Assume that we have $n$ data points. The bootstrap obtains a
+  confidence interval by sampling $m$ complete data sets by drawing
+  with replacement from the original data. The statistic of interest,
+  say the median, is applied to all $m$ of the resampled data sets, yielding
+  $m$ medians. The percentile confidence interval is obtained by taking
+  the $\alpha / 2$ and $1 - \alpha /2$ quantiles of the $m$ medians.
+\item Make sure you do enough resamples so that your confidence interval
+  has stabilized.
+\item Bootstrap intervals are interpreted the same as frequentist intervals.
+\item To guarantee coverage, the bootstrap interval requires large
+  sample sizes.
+\item There are improvements to the percentile method that are not covered in
+  this class.
+\end{enumerate}
+
+\section{The log-normal distribution}
+\begin{enumerate}[1.]
+\item We use ``$\log$'' to represent the natural logarithm (base $e$). 
+\item A random variable $X$ is log-normal with parameters $\mu$ and
+  $\sigma^2$ if $Y = \log X$ is normal with mean $\mu$ and variance
+  $\sigma^2$.
+\item $\mu$ is $E[Y] = E[\log X]$. Because the mean and median are
+  the same for the normal distribution, $\mu$ is also the median for $\log X$.
+  Notice that $\exp\{E[\log X]\} = e^\mu \neq E[X]$. However, because
+  $\mu$ is the median for $\log X$
+  $$
+  .5 = P(\log X \leq \mu) = P(Y \leq e^\mu).
+  $$ 
+  Therefore $e^\mu$ is also the median on the original data scale.
+\item Assuming log-normality, exponentiating a Student's $T$ confidence
+  interval for $\mu$ (using the logged data) yields a confidence
+  for the median on the original data scale.
+\end{enumerate}
+
+% \section{Hypothesis testing for a single mean}
+% \begin{enumerate}[1.]
+% \item The null, or status quo, hypothesis is labeled $H_0$, the alternative
+%   $H_a$ or $H_1$ or $H_2$ ... 
+% \item A {\bf type I error} occurs when we falsely reject the null hypothesis.
+%   The probability of a type I error is usually labeled $\alpha$.
+% \item A {\bf type II error} occurs when we falsely fail to reject the null
+%   hypothesis. A type II error is usually labeled $\beta$.
+% \item A {\bf Power} is the probability that we correctly 
+%   reject the null hypothesis, $1 - \beta$.
+% \item The $Z$ test for $H_0:\mu = \mu_0$ versus $H_1: \mu < \mu_0$ or $H_2: \mu \neq \mu_0$ or
+%   $H_3: \mu > \mu_0$ constructs a test statistic
+%   $
+%   TS = \frac{\bar{X} - \mu_0}{S / \sqrt{n}}
+%   $
+%   and rejects the null hypothesis when 
+%   \begin{enumerate}[$H_1$]
+%   \item $TS \leq -Z_{1 - \alpha}$
+%   \item $|TS| \geq Z_{1 - \alpha / 2}$
+%   \item $TS \geq Z_{1 - \alpha}$
+%   \end{enumerate}
+%   respectively.
+% \item The $Z$ test requires the assumptions of the CLT and for $n$ to be large enough
+%   for it to apply.
+% \item If $n$ is small, then a Student's $T$ test is performed exactly in the same way,
+%   with the normal quantiles replaced by the appropriate Student's $T$ quantiles and
+%   $n-1$ df.
+% \item Tests define confidence intervals by considering the collection of values 
+%   of $\mu_0$ for which you fail to reject a two sided test. This yields exactly the
+%   $T$ and $Z$ confidence intervals respectively.
+% \item Conversely, confidence intervals define tests by the rule where one rejects
+%   $H_0$ if $\mu_0$ is {\em not in} the confidence interval.
+% \item A {\bf P-value} is the probability of getting evidence as extreme or more extreme
+%   than we actually got under the null hypothesis. For $H_3$ above, the P-value is calculated
+%   as $P(Z \geq TS_{obs} | \mu = \mu_0)$ where $TS_{obs}$ is the observed value of our
+%   test statistic. To get the P-value for $H_2$, calculate a one sided P-value and double it.
+% \item The P-value is equal to the {\bf attained significance level}.
+%   That is, the smallest $\alpha$ value for which we would have
+%   rejected the null hypothesis. Therefore, rejecting the null
+%   hypothesis if a P-value is less than $\alpha$ is the same as
+%   performing the rejection region test.
+% \item The power of a $Z$ test for $H_3$ is given by the formula (know how this is obtained)
+%   $$
+%   P(TS > Z_{1 - \alpha} | \mu = \mu_1) = 
+%   P\left(Z \geq \frac{\mu_0 - \mu_1}{\sigma / \sqrt{n}} + Z_{1 - \alpha} \right).
+%   $$
+%   Notice that power required a value for $\mu_1$, the value under
+%   the null hypothesis.  Correspondingly for $H_1$ we have
+%   $$
+%   P\left(Z \leq  \frac{\mu_0 - \mu_1}{\sigma / \sqrt{n}} - Z_{1 - \alpha} \right).
+%   $$
+%   For $H_2$, the power is approximately the appropriate one sided power using $\alpha/2$.
+% \item Some facts about power.
+%   \begin{enumerate}[a.]
+%   \item Power goes up as $\alpha$ goes down.
+%   \item Power of a one sided test is greater than the power of the associated two sided test.
+%   \item Power goes up as $\mu_1$ gets further away from $\mu_0$.
+%   \item Power goes up as $n$ goes up.
+%   \end{enumerate}
+% \item The prior formula can be used to calculate the sample size. For
+%   example, using the power formula for $H_1$, setting $Z_{1 - \beta} =
+%   \frac{\mu_0 - \mu_1}{\sigma / \sqrt{n}} - Z_{1 - \alpha}$ yields
+%   $$
+%   n = \frac{(Z_{1 - \beta} + Z_{1 - \alpha}) ^ 2 \sigma^2}{(\mu_0 - \mu_1)^2},
+%   $$
+%   which gives the sample size to have power = $1-\beta$. This
+%   formula applies for $H_3$ also. For the two sided test, $H_2$, replace $\alpha$ by
+%   $\alpha / 2$.
+% \item Determinants of sample size.
+%   \begin{enumerate}[a.]
+%   \item $n$ gets larger as $\alpha$ gets smaller.
+%   \item $n$ gets larger as the power you want gets larger.
+%   \item $n$ gets lager the closer $\mu_1$ is to $\mu_0$.
+%   \end{enumerate}
+% \end{enumerate}
+
+\section{Binomial confidence intervals and tests}
+\begin{enumerate}[1.]
+\item Binomial distributions are used to model proportions. If
+  $X \sim \mathrm{Binomial}(n,p)$ then $\hat p = X / n$ is a sample
+  proportion.
+\item $\hat p$ has the following properties.
+  \begin{enumerate}[a.]
+  \item It is a sample mean of Bernoulli random variables.
+  \item It has expected value $p$.
+  \item It has variance $p (1 - p) / n$. Note that the largest value that $p (1 - p)$ can 
+    take is $1/4$ at $p = 1/2$.
+  \item $Z = \frac{\hat p - p}{\sqrt{p (1 - p) / n}}$ follows a standard normal distribution
+    for large $n$ by the CLT. The convergence to normality is fastest when $p = .5$.
+  \end{enumerate}
+% \item The {\bf Wald test} for $H_0: p = p_0$ versus one of $H_1: p < p_0$, $H_2: p = p_0$, and
+%   $H_3: p > p_0$ uses the test statistic
+%   $$
+%   TS = \frac{\hat p - p}{\sqrt{\hat p (1 - \hat p) / n}}
+%   $$
+%   which is compared to standard normal quantiles.
+\item The {\bf Wald confidence interval} for a binomial proportion is
+  $$
+  \hat p \pm Z_{1 - \alpha / 2} \sqrt{\hat p (1 - \hat p) / n}.
+  $$
+  The Wald interval is the interval obtained by inverting the Wald test (and vice versa).
+% \item The {\bf Score test} for a binomial proportion is
+%   $$
+%   ts = \frac{\hat p - p}{\sqrt{p_0 (1 - p_0) / n}}.
+%   $$
+%   The score test has better finite sample performance than the Wald test.
+\item The {\bf Score interval} is obtained by inverting a score test 
+\begin{eqnarray*}
+&  \hat p \left(\frac{n}{n + Z_{1 - \alpha / 2}^2}\right) + 
+  \frac{1}{2} \left(\frac{Z_{1 - \alpha / 2}^2}{n + Z_{1 - \alpha / 2}^2}\right) \\
+&  \pm Z_{1 - \alpha/2}\sqrt{\frac{1}{n + Z_{1 - \alpha / 2}^2} 
+  \left[\hat p (1 - \hat p) \left(\frac{n}{n + Z_{1 - \alpha / 2}^2}\right) +
+    \frac{1}{4} \left(\frac{Z_{1 - \alpha / 2}^2}{n + Z_{1 - \alpha / 2}^2}\right)
+  \right]}.
+\end{eqnarray*}
+\item An approximate score interval for $\alpha = .05$ can be obtained by taking
+  $\tilde p = \frac{X + 2}{n + 4}$ and calculating the Wald interval using $\tilde p$
+  instead of $\hat p$ and $\tilde n$ instead of $n$
+% \item An exact binomial test for $H_3$ can be performed by calculating the exact P-value
+%   $$
+%   P(X \geq x_{obs}| p = p_0) = \sum_{k = x_{obs}}^n \left(\begin{array}{c} n \\ k \end{array}\right)p_0^k (1 - p_0)^{n - k}.
+%   $$
+%   where $x_{obs}$ is the observed success count. For $H_1$ the
+%   corresponding exact P-value is
+%   $$
+%   P(X \leq x_{obs}| p = p_0) = 
+%   \sum_{k = 0}^{ x_{obs}} \left(\begin{array}{c} n \\ k \end{array}\right)p_0^k (1 - p_0)^{n - k}.
+%   $$
+%   These confidence intervals are {\bf exact}, which means that the
+%   actual type one error rate is {\em no larger than} $\alpha$. (The
+%   actual type one error rate is generally smaller than $\alpha$.)
+%   Therefore these tests are {\bf conservative}.  For $H_2$, calculate
+%   the appropriate one sided P-value and double it.
+% \item Occasionally, someone will try to convince you to obtain an
+%   exact Type I error rate using supplemental randomization. Ignore
+%   them.
+% \item Inverting the exact test, choosing those value of $p_0$ for
+%   which we fail to reject $H_0$, yields an exact confidence interval.
+%   This interval has to be calculated numerically. The coverage of the
+%   exact binomial interval is no lower than $100(1 - \alpha)\%$.
+\end{enumerate}
+
+\section{The likelihood for a binomial parameter $p$}
+\begin{enumerate}[1.]
+\item The {\bf likelihood} for a parameter is the density {\em viewed
+    as a function of the parameter}.
+\item The binomial likelihood for observed data $x$ is 
+  $p^x (1 - p)^{n - x}$. It is standard to drop constants in the parameter from
+  the likelihood (such as the $n$ choose $x$ part).
+\item The {\bf principle of maximum likelihood} states that a good estimate of
+  the parameter is the one that makes the data that was actually observed most
+  probable. That is, the principle of maximum likelihood says that a good estimate
+  of the parameter is the one that maximizes the likelihood. 
+  \begin{enumerate}[a.]
+  \item The maximum likelihood estimate for $p$ is $\hat p = X/n$.
+  \item The maximum likelihood estimate for $\mu$ for iid $\mathrm{N}(\mu, \sigma^2)$ data
+    is $\bar X$. The maximum likelihood estimate for $\sigma^2$ is $(n - 1) S^2 / n$ (the
+    biased sample variance).
+  \end{enumerate}
+\item The {\bf law of the likelihood} states that {\bf likelihood
+    ratios} represent the relative evidence comparing one hypothesized
+  value of the parameter to another.
+\item Likelihoods are usually plotted so that the maximum value (the
+  value at the ML estimate) is 1. Where reference lines at 1/8 and
+  1/32 intersect the likelihood depict {\bf likelihood intervals}.
+  Points lying within the 1/8 reference line, for example, are such
+  that no other parameter value is more than 8 times better supported
+  given the data.
+\end{enumerate}
+
+\section{Group comparisons}
+\begin{enumerate}[1.]
+\item For group comparisons, make sure to differentiate whether or not the
+  observations are paired (or matched) versus independent.
+\item For paired comparisons for continuous data, one strategy is to
+  calculate the {\bf differences} and use the methods for testing and
+  performing hypotheses regarding a single mean. The resulting tests
+  and confidence intervals are called {\bf paired Student's} $T$ tests
+  and intervals respectively.
+\item For independent groups of iid variables, say $X_i$ and $Y_i$,
+  {\em with a constant variance} $\sigma^2$ across groups
+  $$
+  Z = \frac{\bar X - \bar Y - (\mu_x - \mu_y)}{S_p \sqrt{\frac{1}{n_x} +
+      \frac{1}{n_y}}}
+  $$
+  limits to a standard normal random variable as both $n_x$ and
+  $n_y$ get large. Here 
+  $$S_p^2 = \frac{(n_x - 1) S_x^2 + (n_y - 1) S_y^2}{n_x + n_y - 2}$$
+  is the {\bf pooled estimate} of the variance.  Obviously, $\bar X$,
+  $S_x$, $n_x$ are the sample mean, sample standard deviation and
+  sample size for the $X_i$ and $\bar Y$, $S_y$ and $n_y$ are defined
+  analogously. 
+\item If the $X_i$ and $Y_i$ happen to be normal, then $Z$ follows the
+  Student's $T$ distribution with $n_x + n_y - 2$ degrees of freedom.
+\item Therefore a $(1 - \alpha)\times 100\%$ confidence interval for
+  $\mu_y - \mu_x$ is 
+  $$
+  \bar Y - \bar X \pm t_{n_x + n_y - 2, 1 - \alpha/2}S_p\left(\frac{1}{n_x} + \frac{1}{n_y}\right)^{1/2}
+  $$
+\item Exactly as before, 
+$$
+\frac{\bar Y - \bar X}{S_p \left(\frac{1}{n_x} + \frac{1}{n_y}\right)^{1/2}}
+$$
+follows a non-central $T$ distribution with non-centrality parameter
+$\frac{\mu_y - \mu_x}{\sigma \left(\frac{1}{n_x} +
+    \frac{1}{n_y}\right)^{1/2}}$. Therefore, we can use this statistic
+to create a likelihood for $(\mu_y - \mu_x) / \sigma$, a standardized
+measure of the change in group means
+\item Note that under unequal variances
+$$
+\bar Y - \bar X \sim N\left(\mu_y - \mu_x, \frac{\sigma_x^2}{n_x} + \frac{\sigma_y^2}{n_y}\right)
+$$
+\item The statistic 
+$$
+\frac{\bar Y - \bar X - (\mu_y - \mu_x)}{\left(\frac{\sigma_x^21}{n_x} + \frac{\sigma_y^2}{n_y}\right)^{1/2}}
+$$
+approximately follows Gosset's $T$ distribution with degrees of freedom equal to
+$$
+\frac{\left(S_x^2 / n_x + S_y^2/n_y\right)^2}
+     {\left(\frac{S_x^2}{n_x}\right)^2 / (n_x - 1) +
+      \left(\frac{S_y^2}{n_y}\right)^2 / (n_y - 1)}
+$$
+% \item The test statistic
+%   $
+%   TS = \frac{\bar X - \bar Y}{S_p \sqrt{\frac{1}{n_x} +
+%       \frac{1}{n_y}}}
+%   $  
+%   can be used to test the hypothesis that $H_0: \mu_x = \mu_y$ versus
+%   the alternatives $H_1: \mu_x < \mu_y$, $H_2: \mu_x \neq \mu_y$ and
+%   $H_3:\mu_x > \mu_y$. The test statistic should be compared to Student's
+%   $T$ quantiles with $n_x + n_y - 2$ df.
+% \item $\frac{S_x^2/\sigma_x^2}{S_y^2/\sigma_y^2}$ follows what is
+%   called the $F$ distribution with $n_x - 1$ {\bf numerator degrees of
+%     freedom} and $n_y - 1$ denominator degrees of freedom.
+% \item To test the hypothesis $H_0: \sigma_x^2 = \sigma_y^2$ versus th
+%   hypotheses $H_1 : \sigma_x^2 < \sigma_y^2$, $H_2 : \sigma_x^2 \neq \sigma_y^2$
+%   and $H_3 : \sigma_x^2 > \sigma_y^2$ compare the statistic $TS = S_1^2 / S_2^2$
+%   to the $F$ distribution. We reject $H_0$ if:
+%   \begin{enumerate}[$H_1$]
+%   \item if $TS < F_{n_x - 1, n_y - 1, \alpha}$,
+%   \item if $TS < F_{n_x - 1, n_y - 1, \alpha / 2}$ or $TS > F_{n_x - 1, n_y - 1, 1 - \alpha / 2}$,
+%   \item if  $TS > F_{n_x - 1, n_y - 1, 1 - \alpha}$.
+%   \end{enumerate}
+% \item The F distribution satisfies the property that $F_{n_x - 1, n_y - 1, \alpha} = 
+%   F_{n_y - 1, n_x - 1, 1 - \alpha}$. So that, it turns out, that our results are consistent
+%   whether we put $S_x^2$ on the top or bottom.
+% \item Using the fact that
+%   $$
+%   1 - \alpha = 
+%   P\left(F_{n_x - 1, n_y - 1, \alpha/2} \leq \frac{S_x^2/\sigma_x^2}{S_y^2/\sigma_y^2}
+%   \leq F_{n_x - 1, n_y - 1, 1 - \alpha / 2}\right)
+%   $$
+%   we can calculate a confidence interval for $\frac{\sigma_y^2}{\sigma_x^2}$ as
+%   $
+%   \left[F_{n_x - 1, n_y - 1, \alpha}\frac{S_x^2}{S_y^2},
+%         F_{n_x - 1, n_y - 1, 1-\alpha/2}\frac{S_x^2}{S_y^2}\right].
+%   $
+%   Of course, the confidence interval for $\frac{\sigma_x^2}{\sigma_y^2}$ is
+%   $
+%   \left[F_{n_y - 1, n_x - 1, \alpha}\frac{S_y^2}{S_x^2},
+%         F_{n_y - 1, n_x - 1, 1-\alpha/2}\frac{S_y^2}{S_x^2}\right].
+%   $
+% \item F tests are not robust to the normality assumption.  
+% \item The statistic
+% $$
+%   \frac{\bar X - \bar Y - (\mu_x - \mu_y)}{\sqrt{\frac{S_x^2}{n_x} + \frac{S_y^2}{n_y}}}
+%   $$
+%   follows a standard normal distribution for large $n_x$ and $n_y$.
+%   It follows an approximate Students $T$ distribution if the $X_i$ and
+%   $Y_i$ are normally distributed. The degrees of freedom are given below.
+% \item For testing $H_0 : \mu_x = \mu_y$ in the event where there is
+%   evidence to suggest that $\sigma_x \neq \sigma_y$, the test statistic
+%   $
+%   TS = \frac{\bar X - \bar Y}{\sqrt{\frac{S_x^2}{n_x} + \frac{S_y^2}{n_y}}}
+%   $
+%   follows an approximate Student's $T$ distribution under the null hypothesis
+%   when $X_i$ and
+%   $Y_i$ are normally distributed. The degrees of freedom are approximated with
+%   $$
+%   \frac{(S_x^2 / n_x + S_y^2 / n_y)^2}{(S_x^2 / n_x)^2 / (n_x - 1) + (S_y^2 / n_y)^2 / (n_y - 1)}.
+%   $$
+% \item The power for a $Z$ test of $H_0:\mu_x = \mu_y$ versus $H_3:\mu_x > \mu_y$ is
+%   given by
+%   $$
+%   P\left(Z \geq Z_{1 - \alpha} - \frac{\mu_x - \mu_y}{\sqrt{\frac{\sigma_x^2}{n_x}+\frac{\sigma_y^2}{n_y}}}\right)
+%   $$
+%   while for $H_1:\mu_x < \mu_y$ it is 
+%   $$
+%   P\left(Z \leq -Z_{1 - \alpha} - \frac{\mu_x - \mu_y}{\sqrt{\frac{\sigma_x^2}{n_x}+\frac{\sigma_y^2}{n_y}}}\right).
+%   $$
+% \item Sample size calculation assuming $n_x = n_y = n$
+%   $$
+%   n = \frac{(Z_{1 - \alpha} + Z_{1 - \beta}) ^ 2 (\sigma_x ^2 + \sigma_y ^ 2)}{(\mu_x - \mu_y)^2}.
+%   $$
+\end{enumerate}
+
+\end{document}
+
