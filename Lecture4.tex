@@ -261,8 +261,8 @@ $$
 \begin{verbatim}
 x <- 11; n1 <- 20; alpha1 <- 1; beta1 <- 1
 y <-  5; n2 <- 20; alpha2 <- 1; beta2 <- 1
-p1 <- rbeta(1000, x + alpha1, n - x + beta1)
-p2 <- rbeta(1000, y + alpha2, n - y + beta2)
+p1 <- rbeta(1000, x + alpha1, n1 - x + beta1)
+p2 <- rbeta(1000, y + alpha2, n2 - y + beta2)
 rd <- p2 - p1
 plot(density(rd))
 quantile(rd, c(.025, .975))
